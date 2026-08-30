@@ -1,0 +1,22 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background); --color-foreground: var(--foreground); --color-card: var(--card); --color-card-foreground: var(--card-foreground); --color-popover: var(--popover); --color-popover-foreground: var(--popover-foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-secondary: var(--secondary); --color-secondary-foreground: var(--secondary-foreground); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground); --color-accent: var(--accent); --color-accent-foreground: var(--accent-foreground); --color-destructive: var(--destructive); --color-border: var(--border); --color-input: var(--input); --color-ring: var(--ring); --color-sidebar: var(--sidebar); --color-sidebar-foreground: var(--sidebar-foreground); --font-sans: var(--font-geist-sans); --font-mono: var(--font-geist-mono); --radius-sm: calc(var(--radius) * .6); --radius-md: calc(var(--radius) * .8); --radius-lg: var(--radius); --radius-xl: calc(var(--radius) * 1.4); --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+:root { --background:#f5f6f1; --foreground:#17211b; --card:#fff; --card-foreground:#17211b; --popover:#fff; --popover-foreground:#17211b; --primary:#2f6c4f; --primary-foreground:#fff; --secondary:#e8eee6; --secondary-foreground:#224a38; --muted:#e9ece6; --muted-foreground:#69746d; --accent:#e7edb7; --accent-foreground:#334220; --destructive:#ba3b35; --border:#dde2dc; --input:#d5dcd5; --ring:#2f6c4f; --sidebar:#eef0ea; --sidebar-foreground:#253129; --radius:.75rem; }
+.dark { --background:#111914; --foreground:#edf1eb; --card:#18231c; --card-foreground:#edf1eb; --popover:#18231c; --popover-foreground:#edf1eb; --primary:#7eb596; --primary-foreground:#102218; --secondary:#26362c; --secondary-foreground:#edf1eb; --muted:#263129; --muted-foreground:#a6b1aa; --accent:#394428; --accent-foreground:#e8efba; --destructive:#ef6b65; --border:#2f3c33; --input:#35443a; --ring:#7eb596; --sidebar:#151f19; --sidebar-foreground:#edf1eb; }
+
+@layer base { * { @apply border-border outline-ring/50; } html { @apply font-sans; } body { @apply bg-background text-foreground antialiased; } button,a,input,textarea,select { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/45; } }
+@layer components {
+  .nav-link { @apply flex h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium text-sidebar-foreground/70 transition hover:bg-white/70 hover:text-sidebar-foreground; }
+  .nav-link svg { @apply size-4; } .nav-link-active { @apply bg-white text-primary shadow-sm; }
+  .recent-item { @apply flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs text-muted-foreground transition hover:bg-white/70 hover:text-foreground; } .recent-dot { @apply size-2 shrink-0 rounded-full; }
+  .field-label { @apply text-sm font-semibold; } .field-label span { @apply text-destructive; }
+  .field-control { @apply block h-11 w-full rounded-xl border border-input bg-white px-3 text-sm shadow-sm transition placeholder:text-muted-foreground focus:border-primary; } .field-help { @apply mt-2 text-xs leading-5 text-muted-foreground; }
+  .step-row { @apply flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-muted-foreground transition hover:bg-muted/70; } .step-row-active { @apply bg-[#f0f5ed] text-foreground; }
+  .step-number { @apply grid size-7 shrink-0 place-items-center rounded-lg border border-border bg-background text-[10px] font-semibold; } .step-row-active .step-number { @apply border-primary bg-primary text-primary-foreground; }
+}
