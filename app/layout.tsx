@@ -13,8 +13,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://docbeans.ganga-devi-9467.chatgpt.site'),
   title: 'DocBeans — Knowledge-grounded document creation',
   description: 'Turn a clear five-part brief into a grounded, reviewable and traceable business document.',
+  openGraph: {
+    title: 'DocBeans — Build better documents, from a better brief.',
+    description: 'Grounded. Traceable. Review-ready.',
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'DocBeans — Build better documents, from a better brief.' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'DocBeans — Build better documents, from a better brief.',
+    description: 'Grounded. Traceable. Review-ready.',
+    images: ['/og.png'],
+  },
 };
 
 export default function RootLayout({
