@@ -29,6 +29,7 @@ const sampleDraft = [
 ];
 
 export default function Home() {
+  const [mode, setMode] = useState<'quick' | 'advanced'>('quick');
   const [step, setStep] = useState(0);
   const [screen, setScreen] = useState<'brief' | 'review' | 'draft'>('brief');
   const [role, setRole] = useState('Senior Business Analyst');
@@ -47,9 +48,14 @@ export default function Home() {
   ]);
   const [newReq, setNewReq] = useState('');
   const [generating, setGenerating] = useState(false);
+  const [recipient, setRecipient] = useState('');
+  const [appreciation, setAppreciation] = useState('');
+  const [sender, setSender] = useState('');
+  const [quickTone, setQuickTone] = useState('Warm and sincere');
+  const [quickGenerated, setQuickGenerated] = useState(false);
 
-  const title = screen === 'draft' ? 'Transformation brief' : screen === 'review' ? 'Review your interpreted brief' : 'Build your document brief';
-  const description = screen === 'draft' ? 'Version 1 is ready for human review.' : screen === 'review' ? 'Confirm what DocBeans will use before generation.' : 'Give DocBeans five clear ingredients. We’ll validate them, ground the draft in your sources, and make every requirement traceable.';
+  const title = mode === 'quick' ? (quickGenerated ? 'Your appreciation letter' : 'Write an appreciation letter') : screen === 'draft' ? 'Transformation brief' : screen === 'review' ? 'Review your interpreted brief' : 'Build your document brief';
+  const description = mode === 'quick' ? (quickGenerated ? 'Review, edit or export your letter.' : 'Tell us who deserves recognition and what they achieved. DocBeans will do the rest.') : screen === 'draft' ? 'Version 1 is ready for human review.' : screen === 'review' ? 'Confirm what DocBeans will use before generation.' : 'Give DocBeans five clear ingredients. We’ll validate them, ground the draft in your sources, and make every requirement traceable.';
 
   const addRequirement = () => {
     const text = newReq.trim();
@@ -79,18 +85,48 @@ export default function Home() {
         <AppSidebar />
         <section className="px-4 py-7 sm:px-8 xl:px-12 xl:py-9"><div className="mx-auto max-w-[1140px]">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div><div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground"><span>Documents</span><span>/</span><span>{screen === 'draft' ? 'Transformation brief' : 'New document'}</span></div><h1 className="font-heading text-3xl font-normal tracking-[-0.025em] sm:text-[38px]">{title}</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{description}</p></div>
-            <div className="flex items-center gap-2"><Badge variant="outline" className="h-7 gap-1.5 bg-card px-3 text-muted-foreground"><span className={`size-1.5 rounded-full ${screen === 'draft' ? 'bg-emerald-500' : 'bg-amber-400'}`} /> {screen === 'draft' ? 'Draft · v1' : 'Draft'}</Badge>{screen === 'draft' ? <Button variant="outline" className="h-9 bg-card"><Download /> Export</Button> : <Button variant="outline" className="h-9 bg-card">Save draft</Button>}</div>
+            <div><div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground"><span>Documents</span><span>/</span><span>{mode === 'quick' ? 'Appreciation letter' : screen === 'draft' ? 'Transformation brief' : 'Advanced brief'}</span></div><h1 className="font-heading text-3xl font-normal tracking-[-0.025em] sm:text-[38px]">{title}</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{description}</p></div>
+            <div className="flex items-center gap-2"><Badge variant="outline" className="h-7 gap-1.5 bg-card px-3 text-muted-foreground"><span className={`size-1.5 rounded-full ${(mode === 'quick' ? quickGenerated : screen === 'draft') ? 'bg-emerald-500' : 'bg-amber-400'}`} /> {(mode === 'quick' ? quickGenerated : screen === 'draft') ? 'Draft ready' : 'Draft'}</Badge>{(mode === 'quick' ? quickGenerated : screen === 'draft') ? <Button variant="outline" className="h-9 bg-card"><Download /> Export</Button> : null}</div>
           </div>
 
-          {screen === 'brief' && <BriefScreen step={step} role={role} setRole={setRole} customRole={customRole} setCustomRole={setCustomRole} purpose={purpose} setPurpose={setPurpose} audience={audience} setAudience={setAudience} outcome={outcome} setOutcome={setOutcome} requirements={requirements} setRequirements={setRequirements} newReq={newReq} setNewReq={setNewReq} addRequirement={addRequirement} sources={sources} setSources={setSources} onBack={() => setStep((s) => Math.max(0, s - 1))} onNext={() => step === 4 ? setScreen('review') : setStep((s) => Math.min(4, s + 1))} />}
-          {screen === 'review' && <ReviewScreen role={role === 'Custom role' ? customRole : role} purpose={purpose} audience={audience} outcome={outcome} requirements={requirements} sources={sources} generating={generating} onBack={() => { setScreen('brief'); setStep(4); }} onGenerate={generate} />}
-          {screen === 'draft' && <DraftScreen requirements={requirements} onEditBrief={() => { setScreen('brief'); setStep(0); }} />}
+          <div className="mt-6 flex items-center gap-2 rounded-lg border border-border bg-card p-1.5 sm:w-fit"><button onClick={() => setMode('quick')} className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${mode === 'quick' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}>Quick document</button><button onClick={() => setMode('advanced')} className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${mode === 'advanced' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}>Advanced brief</button></div>
+
+          {mode === 'quick' && <QuickDocumentScreen recipient={recipient} setRecipient={setRecipient} appreciation={appreciation} setAppreciation={setAppreciation} sender={sender} setSender={setSender} tone={quickTone} setTone={setQuickTone} generated={quickGenerated} onGenerate={() => setQuickGenerated(true)} onEdit={() => setQuickGenerated(false)} />}
+          {mode === 'advanced' && screen === 'brief' && <BriefScreen step={step} role={role} setRole={setRole} customRole={customRole} setCustomRole={setCustomRole} purpose={purpose} setPurpose={setPurpose} audience={audience} setAudience={setAudience} outcome={outcome} setOutcome={setOutcome} requirements={requirements} setRequirements={setRequirements} newReq={newReq} setNewReq={setNewReq} addRequirement={addRequirement} sources={sources} setSources={setSources} onBack={() => setStep((s) => Math.max(0, s - 1))} onNext={() => step === 4 ? setScreen('review') : setStep((s) => Math.min(4, s + 1))} />}
+          {mode === 'advanced' && screen === 'review' && <ReviewScreen role={role === 'Custom role' ? customRole : role} purpose={purpose} audience={audience} outcome={outcome} requirements={requirements} sources={sources} generating={generating} onBack={() => { setScreen('brief'); setStep(4); }} onGenerate={generate} />}
+          {mode === 'advanced' && screen === 'draft' && <DraftScreen requirements={requirements} onEditBrief={() => { setScreen('brief'); setStep(0); }} />}
 
         </div></section>
       </div>
     </main>
   );
+}
+
+function QuickDocumentScreen({ recipient, setRecipient, appreciation, setAppreciation, sender, setSender, tone, setTone, generated, onGenerate, onEdit }: { recipient:string; setRecipient:(v:string)=>void; appreciation:string; setAppreciation:(v:string)=>void; sender:string; setSender:(v:string)=>void; tone:string; setTone:(v:string)=>void; generated:boolean; onGenerate:()=>void; onEdit:()=>void }) {
+  if (generated) {
+    const name = recipient.trim() || 'Colleague';
+    const achievement = appreciation.trim() || 'your exceptional contribution and the positive difference you have made to the team';
+    return <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+      <article className="rounded-[20px] border border-border bg-card px-7 py-9 shadow-[0_16px_50px_rgba(0,0,0,0.06)] sm:px-12 sm:py-12">
+        <div className="mx-auto max-w-[680px]"><p className="text-xs font-semibold uppercase tracking-[.14em] text-muted-foreground">Appreciation letter</p><h2 className="mt-3 text-2xl font-normal">With sincere appreciation</h2><div className="mt-8 space-y-5 text-[15px] leading-7 text-[#3f3f3f]"><p>Dear {name},</p><p>I want to take a moment to express my sincere appreciation for {achievement}.</p><p>Your commitment, initiative and willingness to go beyond what was expected have made a meaningful difference. The impact of your work is recognised and deeply valued by the people around you.</p><p>Thank you for the energy, care and professionalism you bring. Your contribution is an excellent example of the difference one person can make.</p><p>With appreciation,<br />{sender.trim() || 'Your colleague'}</p></div></div>
+      </article>
+      <aside className="space-y-4"><div className="rounded-[18px] border border-border bg-card p-5"><div className="flex items-center gap-2 text-sm font-semibold"><CheckCircle2 className="size-4" /> Letter ready</div><dl className="mt-4 space-y-3 text-xs"><div><dt className="text-muted-foreground">Recipient</dt><dd className="mt-1 font-medium">{name}</dd></div><div><dt className="text-muted-foreground">Tone</dt><dd className="mt-1 font-medium">{tone}</dd></div><div><dt className="text-muted-foreground">Format</dt><dd className="mt-1 font-medium">Appreciation letter</dd></div></dl><Button variant="outline" className="mt-5 w-full" onClick={onEdit}>Edit details</Button></div><div className="rounded-[18px] bg-primary p-5 text-primary-foreground"><p className="text-sm font-semibold">Simple by design</p><p className="mt-2 text-xs leading-5 text-white/70">No source packs, approval routing or requirement mapping unless you choose Advanced brief.</p></div></aside>
+    </div>;
+  }
+
+  return <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+    <section className="rounded-[20px] border border-border bg-card shadow-[0_16px_50px_rgba(0,0,0,0.06)]">
+      <div className="border-b border-border px-6 py-5 sm:px-8"><div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-md bg-primary text-primary-foreground"><Sparkles className="size-4" /></span><div><p className="text-xs font-semibold uppercase tracking-[.12em] text-muted-foreground">Quick document</p><h2 className="text-lg font-normal">Just the essentials</h2></div></div></div>
+      <div className="space-y-6 p-6 sm:p-8">
+        <div><label htmlFor="document-type" className="field-label">What do you want to create?</label><div className="relative mt-2"><select id="document-type" className="field-control appearance-none pr-10" defaultValue="Appreciation letter"><option>Appreciation letter</option><option>Thank-you email</option><option>Recognition note</option><option>Recommendation letter</option></select><ChevronDown className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" /></div></div>
+        <div><label htmlFor="recipient" className="field-label">Who is it for? <span>*</span></label><input id="recipient" className="field-control mt-2" value={recipient} onChange={(e)=>setRecipient(e.target.value)} placeholder="e.g. Hamsi" /></div>
+        <div><label htmlFor="appreciation" className="field-label">What would you like to recognise? <span>*</span></label><textarea id="appreciation" className="field-control mt-2 min-h-32 resize-none py-3" value={appreciation} onChange={(e)=>setAppreciation(e.target.value)} placeholder="Describe what they did and the difference it made…" /><p className="field-help">Write naturally. A few sentences are enough.</p></div>
+        <div className="grid gap-5 md:grid-cols-2"><div><label htmlFor="quick-tone" className="field-label">Tone</label><div className="relative mt-2"><select id="quick-tone" className="field-control appearance-none pr-10" value={tone} onChange={(e)=>setTone(e.target.value)}><option>Warm and sincere</option><option>Professional and appreciative</option><option>Concise and heartfelt</option><option>Formal recognition</option></select><ChevronDown className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" /></div></div><div><label htmlFor="sender" className="field-label">From <span className="font-normal text-muted-foreground">(optional)</span></label><input id="sender" className="field-control mt-2" value={sender} onChange={(e)=>setSender(e.target.value)} placeholder="Your name or team" /></div></div>
+        <div className="flex items-center justify-between border-t border-border pt-5"><p className="text-xs text-muted-foreground">Nothing is published automatically.</p><Button className="h-10 gap-2 px-5" disabled={!recipient.trim() || !appreciation.trim()} onClick={onGenerate}><WandSparkles /> Generate letter</Button></div>
+      </div>
+    </section>
+    <aside className="space-y-4"><div className="rounded-[18px] border border-border bg-card p-5"><p className="text-sm font-semibold">That’s all we need</p><div className="mt-4 space-y-3">{['Recipient','What they achieved','Preferred tone'].map((item,i)=><div key={item} className="flex items-center gap-3 text-xs"><span className="grid size-6 place-items-center rounded-full bg-muted font-semibold">{i+1}</span>{item}</div>)}</div></div><div className="rounded-[18px] bg-primary p-5 text-primary-foreground"><p className="text-sm font-semibold">Need more control?</p><p className="mt-2 text-xs leading-5 text-white/70">Switch to Advanced brief only for governed templates, source grounding and formal review workflows.</p></div></aside>
+  </div>;
 }
 
 function AppSidebar() {
