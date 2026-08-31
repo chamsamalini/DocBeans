@@ -13,12 +13,30 @@ import { Badge } from '@/components/ui/badge';
 type Requirement = { id: number; text: string; mandatory: boolean };
 type Source = { id: number; name: string; meta: string; status: 'Ready' | 'Checking' };
 type QuickDocumentType = 'appreciation' | 'recommendation' | 'testimonial' | 'thank-you' | 'cover-letter' | 'quotation' | 'proposal' | 'project-brief' | 'executive-summary' | 'curriculum' | 'job-description' | 'memo' | 'announcement' | 'meeting-agenda' | 'meeting-minutes' | 'sop' | 'leave' | 'medical-leave';
+type DocumentFont = 'source-sans' | 'playfair' | 'montserrat' | 'georgia' | 'times';
+type DocumentTheme = 'minimal' | 'corporate' | 'warm' | 'editorial' | 'formal';
 type QuickDocumentConfig = {
   label: string; noun: string; heading: string; description: string;
   primaryLabel: string; primaryPlaceholder: string;
   detailLabel: string; detailPlaceholder: string; detailHelp: string;
   secondaryLabel?: string; secondaryPlaceholder?: string;
   tones: string[]; checklist: string[];
+};
+
+const documentFonts: Record<DocumentFont, { label:string; family:string }> = {
+  'source-sans': { label: 'Source Sans 3 · Clean', family: 'var(--font-source-sans), Arial, sans-serif' },
+  playfair: { label: 'Playfair Display · Elegant', family: 'var(--font-playfair), Georgia, serif' },
+  montserrat: { label: 'Montserrat · Modern', family: 'var(--font-montserrat), Arial, sans-serif' },
+  georgia: { label: 'Georgia · Classic', family: 'Georgia, Times, serif' },
+  times: { label: 'Times New Roman · Traditional', family: '"Times New Roman", Times, serif' },
+};
+
+const documentThemes: Record<DocumentTheme, { label:string; description:string; surface:string; accent:string; soft:string; text:string; border:string }> = {
+  minimal: { label: 'Minimal', description: 'Clean black and white', surface: '#ffffff', accent: '#161616', soft: '#f1f1ef', text: '#353535', border: '#dededb' },
+  corporate: { label: 'Corporate blue', description: 'Structured and authoritative', surface: '#fbfcff', accent: '#1e3a5f', soft: '#eaf0f6', text: '#293746', border: '#c5d2df' },
+  warm: { label: 'Warm ivory', description: 'Personal and approachable', surface: '#fffaf4', accent: '#8b4a2f', soft: '#f5e9dd', text: '#4d3a32', border: '#dec8b8' },
+  editorial: { label: 'Editorial', description: 'Refined and publication-ready', surface: '#fffdf8', accent: '#51483e', soft: '#eee8dd', text: '#3f3a34', border: '#d7cec0' },
+  formal: { label: 'Formal green', description: 'Professional and established', surface: '#fbfdfb', accent: '#1f4b38', soft: '#e7f0eb', text: '#31443b', border: '#bfd0c6' },
 };
 
 const quickDocuments: Record<QuickDocumentType, QuickDocumentConfig> = {
@@ -83,6 +101,8 @@ export default function Home() {
   const [quickSecondary, setQuickSecondary] = useState('');
   const [sender, setSender] = useState('');
   const [quickTone, setQuickTone] = useState(quickDocuments.appreciation.tones[0]);
+  const [quickFont, setQuickFont] = useState<DocumentFont>('source-sans');
+  const [quickTheme, setQuickTheme] = useState<DocumentTheme>('minimal');
   const [quickGenerated, setQuickGenerated] = useState(false);
 
   const quickConfig = quickDocuments[quickType];
@@ -128,7 +148,7 @@ export default function Home() {
 
           <div className="mt-6 flex items-center gap-2 rounded-lg border border-border bg-card p-1.5 sm:w-fit"><button onClick={() => setMode('quick')} className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${mode === 'quick' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}>Quick document</button><button onClick={() => setMode('advanced')} className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${mode === 'advanced' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}>Advanced brief</button></div>
 
-          {mode === 'quick' && <QuickDocumentScreen documentType={quickType} onTypeChange={changeQuickType} recipient={recipient} setRecipient={setRecipient} details={appreciation} setDetails={setAppreciation} secondary={quickSecondary} setSecondary={setQuickSecondary} sender={sender} setSender={setSender} tone={quickTone} setTone={setQuickTone} generated={quickGenerated} onGenerate={() => setQuickGenerated(true)} onEdit={() => setQuickGenerated(false)} />}
+          {mode === 'quick' && <QuickDocumentScreen documentType={quickType} onTypeChange={changeQuickType} recipient={recipient} setRecipient={setRecipient} details={appreciation} setDetails={setAppreciation} secondary={quickSecondary} setSecondary={setQuickSecondary} sender={sender} setSender={setSender} tone={quickTone} setTone={setQuickTone} font={quickFont} setFont={setQuickFont} theme={quickTheme} setTheme={setQuickTheme} generated={quickGenerated} onGenerate={() => setQuickGenerated(true)} onEdit={() => setQuickGenerated(false)} />}
           {mode === 'advanced' && screen === 'brief' && <BriefScreen step={step} role={role} setRole={setRole} customRole={customRole} setCustomRole={setCustomRole} purpose={purpose} setPurpose={setPurpose} audience={audience} setAudience={setAudience} outcome={outcome} setOutcome={setOutcome} requirements={requirements} setRequirements={setRequirements} newReq={newReq} setNewReq={setNewReq} addRequirement={addRequirement} sources={sources} setSources={setSources} onBack={() => setStep((s) => Math.max(0, s - 1))} onNext={() => step === 4 ? setScreen('review') : setStep((s) => Math.min(4, s + 1))} />}
           {mode === 'advanced' && screen === 'review' && <ReviewScreen role={role === 'Custom role' ? customRole : role} purpose={purpose} audience={audience} outcome={outcome} requirements={requirements} sources={sources} generating={generating} onBack={() => { setScreen('brief'); setStep(4); }} onGenerate={generate} />}
           {mode === 'advanced' && screen === 'draft' && <DraftScreen requirements={requirements} onEditBrief={() => { setScreen('brief'); setStep(0); }} />}
@@ -139,14 +159,15 @@ export default function Home() {
   );
 }
 
-function QuickDocumentScreen({ documentType, onTypeChange, recipient, setRecipient, details, setDetails, secondary, setSecondary, sender, setSender, tone, setTone, generated, onGenerate, onEdit }: { documentType:QuickDocumentType; onTypeChange:(v:QuickDocumentType)=>void; recipient:string; setRecipient:(v:string)=>void; details:string; setDetails:(v:string)=>void; secondary:string; setSecondary:(v:string)=>void; sender:string; setSender:(v:string)=>void; tone:string; setTone:(v:string)=>void; generated:boolean; onGenerate:()=>void; onEdit:()=>void }) {
+function QuickDocumentScreen({ documentType, onTypeChange, recipient, setRecipient, details, setDetails, secondary, setSecondary, sender, setSender, tone, setTone, font, setFont, theme, setTheme, generated, onGenerate, onEdit }: { documentType:QuickDocumentType; onTypeChange:(v:QuickDocumentType)=>void; recipient:string; setRecipient:(v:string)=>void; details:string; setDetails:(v:string)=>void; secondary:string; setSecondary:(v:string)=>void; sender:string; setSender:(v:string)=>void; tone:string; setTone:(v:string)=>void; font:DocumentFont; setFont:(v:DocumentFont)=>void; theme:DocumentTheme; setTheme:(v:DocumentTheme)=>void; generated:boolean; onGenerate:()=>void; onEdit:()=>void }) {
   const config = quickDocuments[documentType];
+  const preset = documentThemes[theme];
 
   if (generated) return <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
-    <article className="rounded-[20px] border border-border bg-card px-7 py-9 shadow-[0_16px_50px_rgba(0,0,0,0.06)] sm:px-12 sm:py-12">
-      <QuickDraft type={documentType} primary={recipient.trim()} details={details.trim()} secondary={secondary.trim()} sender={sender.trim()} />
+    <article className="rounded-[20px] border border-t-4 px-7 py-9 shadow-[0_16px_50px_rgba(0,0,0,0.06)] transition-colors sm:px-12 sm:py-12" style={{backgroundColor:preset.surface,borderColor:preset.border,borderTopColor:preset.accent}}>
+      <QuickDraft type={documentType} primary={recipient.trim()} details={details.trim()} secondary={secondary.trim()} sender={sender.trim()} font={font} theme={theme} />
     </article>
-    <aside className="space-y-4"><div className="rounded-[18px] border border-border bg-card p-5"><div className="flex items-center gap-2 text-sm font-semibold"><CheckCircle2 className="size-4" /> Draft ready</div><dl className="mt-4 space-y-3 text-xs"><div><dt className="text-muted-foreground">Document</dt><dd className="mt-1 font-medium">{config.label}</dd></div><div><dt className="text-muted-foreground">Tone</dt><dd className="mt-1 font-medium">{tone}</dd></div><div><dt className="text-muted-foreground">Prepared for</dt><dd className="mt-1 font-medium">{recipient}</dd></div></dl><Button variant="outline" className="mt-5 w-full" onClick={onEdit}>Edit details</Button></div><div className="rounded-[18px] bg-primary p-5 text-primary-foreground"><p className="text-sm font-semibold">Relevant by design</p><p className="mt-2 text-xs leading-5 text-white/70">The questions and document structure change with the type you select.</p></div></aside>
+    <aside className="space-y-4"><div className="rounded-[18px] border border-border bg-card p-5"><div className="flex items-center gap-2 text-sm font-semibold"><CheckCircle2 className="size-4" /> Draft ready</div><dl className="mt-4 space-y-3 text-xs"><div><dt className="text-muted-foreground">Document</dt><dd className="mt-1 font-medium">{config.label}</dd></div><div><dt className="text-muted-foreground">Style</dt><dd className="mt-1 font-medium">{documentFonts[font].label.split(' · ')[0]} · {preset.label}</dd></div><div><dt className="text-muted-foreground">Tone</dt><dd className="mt-1 font-medium">{tone}</dd></div><div><dt className="text-muted-foreground">Prepared for</dt><dd className="mt-1 font-medium">{recipient}</dd></div></dl><Button variant="outline" className="mt-5 w-full" onClick={onEdit}>Edit details</Button></div><div className="rounded-[18px] bg-primary p-5 text-primary-foreground"><p className="text-sm font-semibold">Relevant by design</p><p className="mt-2 text-xs leading-5 text-white/70">The questions, structure, typography and visual theme follow the choices you make.</p></div></aside>
   </div>;
 
   const preparedByLabel = ['quotation', 'proposal', 'project-brief', 'executive-summary', 'curriculum', 'job-description', 'meeting-agenda', 'meeting-minutes', 'sop'].includes(documentType) ? 'Prepared by' : 'From';
@@ -159,6 +180,7 @@ function QuickDocumentScreen({ documentType, onTypeChange, recipient, setRecipie
         <div><label htmlFor="quick-details" className="field-label">{config.detailLabel} <span>*</span></label><textarea id="quick-details" className="field-control mt-2 min-h-32 resize-none py-3" value={details} onChange={(e)=>setDetails(e.target.value)} placeholder={config.detailPlaceholder} /><p className="field-help">{config.detailHelp}</p></div>
         {config.secondaryLabel && <div><label htmlFor="quick-secondary" className="field-label">{config.secondaryLabel}</label><input id="quick-secondary" className="field-control mt-2" value={secondary} onChange={(e)=>setSecondary(e.target.value)} placeholder={config.secondaryPlaceholder} /></div>}
         <div className="grid gap-5 md:grid-cols-2"><div><label htmlFor="quick-tone" className="field-label">Tone</label><div className="relative mt-2"><select id="quick-tone" className="field-control appearance-none pr-10" value={tone} onChange={(e)=>setTone(e.target.value)}>{config.tones.map(item=><option key={item}>{item}</option>)}</select><ChevronDown className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" /></div></div><div><label htmlFor="sender" className="field-label">{preparedByLabel} <span className="font-normal text-muted-foreground">(optional)</span></label><input id="sender" className="field-control mt-2" value={sender} onChange={(e)=>setSender(e.target.value)} placeholder="Your name or organisation" /></div></div>
+        <div className="rounded-xl border border-border bg-[#fafafa] p-4 sm:p-5"><div className="flex items-start justify-between gap-4"><div><p className="text-sm font-semibold">Document styling</p><p className="mt-1 text-xs text-muted-foreground">Applied to the generated preview and export.</p></div><div className="flex gap-1.5" aria-hidden="true"><span className="size-3 rounded-full border" style={{backgroundColor:preset.accent}} /><span className="size-3 rounded-full border" style={{backgroundColor:preset.soft}} /><span className="size-3 rounded-full border" style={{backgroundColor:preset.surface}} /></div></div><div className="mt-4 grid gap-4 md:grid-cols-2"><div><label htmlFor="quick-font" className="field-label">Font</label><div className="relative mt-2"><select id="quick-font" className="field-control appearance-none pr-10" value={font} onChange={(e)=>setFont(e.target.value as DocumentFont)}>{Object.entries(documentFonts).map(([value,item])=><option key={value} value={value}>{item.label}</option>)}</select><ChevronDown className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" /></div></div><div><label htmlFor="quick-theme" className="field-label">Preset theme</label><div className="relative mt-2"><select id="quick-theme" className="field-control appearance-none pr-10" value={theme} onChange={(e)=>setTheme(e.target.value as DocumentTheme)}>{Object.entries(documentThemes).map(([value,item])=><option key={value} value={value}>{item.label} · {item.description}</option>)}</select><ChevronDown className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" /></div></div></div></div>
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5"><p className="text-xs text-muted-foreground">Nothing is published automatically.</p><Button className="h-10 gap-2 px-5" disabled={!recipient.trim() || !details.trim()} onClick={onGenerate}><WandSparkles /> Generate {config.noun}</Button></div>
       </div>
     </section>
@@ -166,9 +188,10 @@ function QuickDocumentScreen({ documentType, onTypeChange, recipient, setRecipie
   </div>;
 }
 
-function QuickDraft({ type, primary, details, secondary, sender }: { type:QuickDocumentType; primary:string; details:string; secondary:string; sender:string }) {
+function QuickDraft({ type, primary, details, secondary, sender, font, theme }: { type:QuickDocumentType; primary:string; details:string; secondary:string; sender:string; font:DocumentFont; theme:DocumentTheme }) {
   const byline = sender || 'Your name';
-  const shell = (label:string, title:string, content:React.ReactNode) => <div className="mx-auto max-w-[680px]"><p className="text-xs font-semibold uppercase tracking-[.14em] text-muted-foreground">{label}</p><h2 className="mt-3 text-2xl font-normal">{title}</h2><div className="mt-8 space-y-5 text-[15px] leading-7 text-[#3f3f3f]">{content}</div></div>;
+  const preset = documentThemes[theme];
+  const shell = (label:string, title:string, content:React.ReactNode) => <div className="mx-auto max-w-[680px]" style={{fontFamily:documentFonts[font].family,color:preset.text}}><p className="text-xs font-semibold uppercase tracking-[.14em]" style={{color:preset.accent}}>{label}</p><h2 className="mt-3 text-2xl font-normal" style={{fontFamily:documentFonts[font].family,color:preset.accent}}>{title}</h2><div className="mt-5 h-px" style={{backgroundColor:preset.border}} /><div className="mt-8 space-y-5 text-[15px] leading-7">{content}</div></div>;
   if (type === 'appreciation') return shell('Appreciation letter', 'With sincere appreciation', <><p>Dear {primary},</p><p>I want to express my sincere appreciation for {details}.</p><p>Your contribution has made a meaningful difference and is genuinely valued. Thank you for the care, initiative and professionalism you have shown.</p><p>With appreciation,<br />{byline}</p></>);
   if (type === 'thank-you') return shell('Thank-you email', `Thank you, ${primary}`, <><p>Dear {primary},</p><p>Thank you for {details}.</p><p>Your support made a real difference, and I truly appreciate the time and care you contributed.</p>{secondary && <p>{secondary}</p>}<p>Warm regards,<br />{byline}</p></>);
   if (type === 'recommendation') return shell('Recommendation letter', `Recommendation for ${primary}`, <><p>To whom it may concern,</p><p>I am pleased to recommend {primary}{secondary ? ` for ${secondary}` : ''}.</p><p>{details}</p><p>Based on these strengths and achievements, I recommend {primary} with confidence. I believe they will bring the same commitment, capability and positive impact to their next opportunity.</p><p>Sincerely,<br />{byline}</p></>);
