@@ -32,16 +32,17 @@
 - [x] T025 Move generation and validation logic into the backend service boundary and keep API routes thin
 - [x] T026 Document the single-Worker deployment topology, runtime configuration, and Auth0 replacement procedure
 - [x] T027 Add authentication provider selection to the environment contract
+- [x] T028 Remove redundant uppercase page descriptors while preserving useful in-page section labels
 
 ## Planned commercial and desktop work
 
-- [ ] T028 Define checkout, subscription lifecycle, invoices, refunds, and tax-calculation requirements
-- [ ] T029 Connect a payment provider for USD 7 monthly platform subscriptions
-- [ ] T030 Add durable account-level usage and billing history
-- [ ] T031 Configure an administrator email allowlist before widening Site access
-- [ ] T032 Design desktop licensing for the USD 45 one-time purchase
-- [ ] T033 Package, sign, and verify the desktop installer
-- [ ] T034 Implement secure post-purchase desktop download delivery
-- [ ] T035 Define desktop updates, supported operating systems, and upgrade policy
-- [ ] T036 Add automated billing-accounting tests for managed AI and BYOK
-- [ ] T037 Implement and validate an Auth0 adapter if the product owner selects Auth0
+- [ ] T029 Define checkout, subscription lifecycle, invoices, refunds, and tax-calculation requirements
+- [ ] T030 Connect a payment provider for USD 7 monthly platform subscriptions
+- [ ] T031 Add durable account-level usage and billing history
+- [ ] T032 Configure an administrator email allowlist before widening Site access
+- [ ] T033 Design desktop licensing for the USD 45 one-time purchase
+- [ ] T034 Package, sign, and verify the desktop installer
+- [ ] T035 Implement secure post-purchase desktop download delivery
+- [ ] T036 Define desktop updates, supported operating systems, and upgrade policy
+- [ ] T037 Add automated billing-accounting tests for managed AI and BYOK
+- [ ] T038 Implement and validate an Auth0 adapter if the product owner selects Auth0

@@ -129,6 +129,7 @@ As the product owner, I can replace the authentication provider without changing
 - **FR-030:** Prevent frontend and backend-generation modules from importing Supabase or another identity-provider SDK directly.
 - **FR-031:** Define provider-neutral browser and server authentication contracts for identity, sessions, social/email sign-in, password recovery, TOTP MFA, and assurance level.
 - **FR-032:** Keep framework API routes thin and delegate generation, validation, provider calls, and usage calculation to the backend service.
+- **FR-033:** Present each page with its primary heading directly, without a redundant uppercase descriptor above the page title.
 
 ## Edge Cases
 
@@ -154,6 +155,7 @@ As the product owner, I can replace the authentication provider without changing
 - **SC-009:** Public navigation contains no separate Features, Updates, Settings, Admin, or Policy header links.
 - **SC-010:** Provider-specific authentication SDK imports exist only inside the selected authentication adapter.
 - **SC-011:** A production build succeeds after the service-boundary refactor with unchanged public routes and user workflows.
+- **SC-012:** About, Pricing, Manual, Policy, Login, User Portal, Admin, and password recovery pages do not show a redundant page-description kicker above the main heading.
 
 ## Out of Scope for Current Beta
 

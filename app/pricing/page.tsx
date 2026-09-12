@@ -5,7 +5,6 @@ import { buttonVariants } from '@/components/ui/button';
 
 export default function PricingPage() {
   return <MarketingPage
-    kicker="Simple pricing"
     title="Pay for access, then choose how your AI usage is billed."
     intro="Your DocBeans access fee and AI-generation charges are separate. Choose the web platform or desktop edition, then use DocBeans AI or bring your own provider key."
   >
