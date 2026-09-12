@@ -34,6 +34,7 @@
 - [x] T027 Add authentication provider selection to the environment contract
 - [x] T028 Remove redundant uppercase page descriptors while preserving useful in-page section labels
 - [x] T039 Apply black body text and the DocBeans logo orange to the shared button system
+- [x] T040 Add the Petreltech product attribution to the shared footer
 
 ## Planned commercial and desktop work
 
