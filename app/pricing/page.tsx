@@ -17,7 +17,7 @@ export default function PricingPage() {
           <h3 className="mt-4 text-xl font-semibold">DocBeans Platform</h3>
           <div className="mt-4 flex items-end gap-2"><span className="text-4xl font-semibold tracking-[-.04em]">USD 7</span><span className="pb-1 text-muted-foreground">per month</span></div>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">Recurring browser access, including all document workflows, themes and product updates.</p>
-          <Link href="/create" className={buttonVariants({className:'mt-6 w-full'})}>Use DocBeans online</Link>
+          <Link href="/login" className={buttonVariants({className:'mt-6 w-full'})}>Use DocBeans online</Link>
         </article>
         <article className="rounded-2xl border border-border p-6">
           <Download className="size-6 text-accent" />

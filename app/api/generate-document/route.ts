@@ -1,4 +1,5 @@
 import { env } from 'cloudflare:workers';
+import { getDocBeansUser } from '@/lib/supabase/server';
 import type { GenerationUsage, QuickGenerationResponse } from '@/lib/job-generation';
 
 type Provider = 'anthropic' | 'openai';
@@ -51,6 +52,7 @@ function usage(mode:GenerationUsage['mode'], model:string, raw:Record<string,unk
 }
 
 export async function POST(request:Request) {
+  if (!await getDocBeansUser()) return Response.json({error:'Sign in to generate a document.'},{status:401});
   const requestId=crypto.randomUUID();
   const payload=await request.json().catch(()=>null) as Record<string,unknown>|null;
   if (!payload || !documentTypes.has(clean(payload.documentType,80)) || !clean(payload.primary) || !clean(payload.details)) return Response.json({error:'Document type and required details are missing.'},{status:400,headers:{'X-Request-ID':requestId}});

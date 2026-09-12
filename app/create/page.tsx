@@ -155,7 +155,7 @@ export default function Home() {
           <Badge className="ml-1 bg-accent text-[10px] text-accent-foreground">BETA</Badge>
         </div>
         <label className="mx-auto hidden h-9 w-full max-w-sm items-center gap-2 rounded-xl border border-border bg-muted/55 px-3 text-sm text-muted-foreground md:flex"><Search className="size-4" /><input aria-label="Search documents" className="min-w-0 flex-1 bg-transparent outline-none" placeholder="Search documents" /><kbd className="rounded-md border bg-background px-1.5 py-0.5 text-[10px]">⌘ K</kbd></label>
-        <div className="ml-auto flex w-56 items-center justify-end gap-1 xl:w-64"><a href="/settings" aria-label="AI settings" className="grid size-9 place-items-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"><Settings className="size-4" /></a><Button aria-label="Help" variant="ghost" size="icon"><CircleHelp /></Button><Button aria-label="Notifications" variant="ghost" size="icon"><Bell /></Button><button aria-label="Open profile" className="ml-1 grid size-8 place-items-center rounded-full bg-primary text-xs font-semibold text-white">HM</button></div>
+        <div className="ml-auto flex w-56 items-center justify-end gap-1 xl:w-64"><a href="/settings" aria-label="AI settings" className="grid size-9 place-items-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"><Settings className="size-4" /></a><Button aria-label="Help" variant="ghost" size="icon"><CircleHelp /></Button><Button aria-label="Notifications" variant="ghost" size="icon"><Bell /></Button><a href="/portal" aria-label="Open user portal" className="ml-1 grid size-8 place-items-center rounded-full bg-primary text-xs font-semibold text-white">HM</a></div>
       </header>
 
       <div className="grid min-h-[calc(100vh-64px)] grid-cols-1 lg:grid-cols-[245px_minmax(0,1fr)]">
@@ -264,7 +264,7 @@ function QuickDocumentScreen({ documentType, onTypeChange, recipient, setRecipie
           slide.background = { color:preset.surface.replace('#','') };
           slide.addText(config.label,{x:0.65,y:0.42,w:11.8,h:0.4,fontFace:'Arial',fontSize:18,bold:true,color:colours.heading.replace('#',''),margin:0});
           slide.addShape(deck.ShapeType.line,{x:0.65,y:0.95,w:12,h:0,line:{color:preset.border.replace('#',''),width:1}});
-          slide.addText(contentLines.slice(i,i+8).map(value=>({text:value,options:{bullet:{indent:18},breakLine:true}})),{x:0.8,y:1.25,w:11.7,h:5.65,fontFace:'Arial',fontSize:17,color:colours.body.replace('#',''),breakLine:true,margin:0.08,paraSpaceAfterPt:12,valign:'top'});
+          slide.addText(contentLines.slice(i,i+8).map(value=>({text:value,options:{bullet:{indent:18},breakLine:true}})),{x:0.8,y:1.25,w:11.7,h:5.65,fontFace:'Arial',fontSize:17,color:colours.body.replace('#',''),breakLine:true,margin:0.08,paraSpaceAfter:12,valign:'top'});
         }
         await deck.writeFile({ fileName:`${baseName}.pptx` });
       } else {
@@ -305,6 +305,18 @@ function QuickDocumentScreen({ documentType, onTypeChange, recipient, setRecipie
       if (isJobPost) setJobResult((result as JobGenerationResponse).document);
       else setQuickResult((result as QuickGenerationResponse).document);
       setUsage(result.usage);
+      try {
+        const key = 'docbeans-usage-totals';
+        const previous = JSON.parse(window.localStorage.getItem(key) || '{}');
+        window.localStorage.setItem(key, JSON.stringify({
+          generations:(previous.generations || 0) + 1,
+          inputTokens:(previous.inputTokens || 0) + result.usage.inputTokens,
+          outputTokens:(previous.outputTokens || 0) + result.usage.outputTokens,
+          credits:(previous.credits || 0) + result.usage.credits,
+          providerCostUsd:(previous.providerCostUsd || 0) + result.usage.providerCostUsd,
+          customerChargeSgd:(previous.customerChargeSgd || 0) + result.usage.customerChargeSgd,
+        }));
+      } catch { /* Usage display remains available for the current generation. */ }
       setNotice(result.notice || '');
       setEditingJob(false);
       onGenerate();
@@ -465,7 +477,7 @@ function QuickDraft({ type, primary, details, secondary, sender, font, theme, co
 }
 
 function AppSidebar() {
-  return <aside className="hidden flex-col border-r border-border bg-sidebar px-3 py-5 lg:flex"><Button className="h-10 justify-start gap-2.5 rounded-xl px-3"><Plus /> New document</Button><nav aria-label="Primary" className="mt-5 space-y-1"><a className="nav-link nav-link-active" href="/create"><FileText /> Documents</a><a className="nav-link" href="/"><FolderKanban /> Features &amp; about</a><a className="nav-link" href="/pricing"><LayoutTemplate /> Pricing</a><a className="nav-link" href="/manual"><BookOpen /> Manual</a></nav><div className="mt-7 px-3 text-[11px] font-semibold uppercase tracking-[0.13em] text-muted-foreground">Recent</div><div className="mt-2 space-y-1"><button className="recent-item"><span className="recent-dot bg-[#16888b]" />Q3 transformation brief</button><button className="recent-item"><span className="recent-dot bg-[#f26b4f]" />Vendor assessment</button><button className="recent-item"><span className="recent-dot bg-[#123f55]" />Launch communication</button></div><div className="mt-auto rounded-xl border border-border bg-white/50 p-3"><p className="text-[11px] font-semibold text-foreground">DocBeans workspace</p><div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground"><ShieldCheck className="size-3" /> Protected knowledge</div></div><div className="mt-3 border-t border-border pt-3"><a className="nav-link" href="/settings"><Settings /> AI settings</a></div></aside>;
+  return <aside className="hidden flex-col border-r border-border bg-white px-3 py-5 lg:flex"><a href="/create" className="inline-flex h-10 items-center justify-start gap-2.5 rounded-xl bg-primary px-3 text-sm font-semibold text-white"><Plus /> New document</a><nav aria-label="Workspace" className="mt-5 space-y-1"><a className="nav-link nav-link-active" href="/create"><FileText /> Documents</a><a className="nav-link" href="/portal"><Users /> User portal</a><a className="nav-link" href="/settings"><Settings /> AI settings</a></nav><div className="mt-7 px-3 text-[11px] font-semibold uppercase tracking-[0.13em] text-muted-foreground">Recent</div><div className="mt-2 space-y-1"><button className="recent-item"><span className="recent-dot bg-[#16888b]" />Q3 transformation brief</button><button className="recent-item"><span className="recent-dot bg-[#f26b4f]" />Vendor assessment</button><button className="recent-item"><span className="recent-dot bg-[#123f55]" />Launch communication</button></div><div className="mt-auto rounded-xl border border-border bg-white p-3"><p className="text-[11px] font-semibold text-foreground">DocBeans workspace</p><div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground"><ShieldCheck className="size-3" /> Protected knowledge</div></div></aside>;
 }
 
 type BriefProps = {

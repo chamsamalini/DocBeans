@@ -1,4 +1,5 @@
 import { env } from 'cloudflare:workers';
+import { getDocBeansUser } from '@/lib/supabase/server';
 import type { GeneratedJobDocument, JobGenerationResponse, JobPostInput } from '@/lib/job-generation';
 
 const DOCBEANS_PRICE_SGD = 0.03;
@@ -271,6 +272,7 @@ function providerSelection(payload:unknown) {
 }
 
 export async function POST(request:Request) {
+  if (!await getDocBeansUser()) return Response.json({error:'Sign in to generate a document.'},{status:401});
   const requestId = crypto.randomUUID();
   const startedAt = Date.now();
   const payload = await request.json().catch(() => null);

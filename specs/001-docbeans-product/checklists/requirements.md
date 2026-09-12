@@ -9,4 +9,4 @@
 - [x] Edge cases cover provider, credential, content, billing, and publication risks.
 - [x] Success criteria are measurable or directly verifiable.
 - [x] Out-of-scope items prevent inactive features from being misrepresented.
-- [x] Feature, pricing, manual, policy, and generation behavior share one source of truth.
+- [x] About, pricing, manual, policy, account, portal, and generation behavior share one source of truth.

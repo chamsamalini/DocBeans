@@ -4,7 +4,7 @@
 
 ## Summary
 
-Maintain DocBeans as a document-first web application with adaptive Quick Document flows, a governed Advanced Brief, application-wide AI settings, transparent managed/BYOK billing, quality review, professional document styling, and supporting product-information pages.
+Maintain DocBeans as a document-first web application with a white-background public experience, platform-managed account entry, adaptive Quick Document flows, a governed Advanced Brief, application-wide AI settings, transparent managed/BYOK billing, quality review, professional document styling, and separate user and admin portals.
 
 ## Technical Context
 
@@ -12,7 +12,7 @@ Maintain DocBeans as a document-first web application with adaptive Quick Docume
 - **Framework:** Vinext 1 beta with Vite 8
 - **UI:** Tailwind CSS 4 and existing Shadcn primitives
 - **Runtime:** Cloudflare Worker-compatible server output
-- **Storage:** Browser local/session storage for preferences and BYOK session credentials; no durable application database
+- **Storage:** Browser local/session storage for preferences, BYOK session credentials, and device-level usage totals; no durable application database
 - **AI providers:** Anthropic Messages API and OpenAI Responses API
 - **Testing:** Production build, route verification, visual browser review, and focused generation-accounting checks
 - **Target platforms:** Modern desktop/mobile browsers; packaged desktop edition planned
@@ -30,13 +30,20 @@ Maintain DocBeans as a document-first web application with adaptive Quick Docume
 
 ```text
 app/
+├── admin/page.tsx
 ├── api/generate/route.ts
 ├── api/generate-document/route.ts
+├── auth/callback/route.ts
+├── create/layout.tsx
 ├── create/page.tsx
 ├── features/page.tsx
+├── login/page.tsx
 ├── pricing/page.tsx
 ├── manual/page.tsx
 ├── policy/page.tsx
+├── portal/page.tsx
+├── portal/usage-panel.tsx
+├── settings/layout.tsx
 ├── settings/page.tsx
 └── page.tsx
 components/
@@ -56,7 +63,7 @@ specs/001-docbeans-product/
 
 ## Design Decisions
 
-1. Use a combined Features and About page as the public landing page, include current product updates there, and keep Quick Document as the default working surface at `/create`.
+1. Use About as the public landing page, include product features and current updates within it, and keep Quick Document as the default protected working surface at `/create`.
 2. Store provider/model preference locally and BYOK credentials in session storage.
 3. Determine BYOK billing from a request that explicitly identifies BYOK and supplies a provider key.
 4. Keep provider-cost values as estimates based on returned token usage and configured rates.
@@ -64,6 +71,10 @@ specs/001-docbeans-product/
 6. Use Montserrat for the interface; user-selected fonts apply only to generated documents.
 7. Present product capabilities in an executive operating-model layout and keep detailed presentation controls inside the document workflow.
 8. Generate genuine PDF, DOCX, PPTX, TXT, and XLSX files in the browser without automatic publishing.
+9. Use Supabase Auth for Google, Microsoft and verified email/password accounts; protect product routes and generation endpoints with validated Supabase sessions.
+10. Make TOTP authenticator MFA available to every user and mandatory for administrator accounts identified through a server-side allowlist.
+11. Keep public navigation focused on About, Pricing, Manual, and Create Document; place compliance policy links only in the footer.
+12. Keep billing controls informational until a payment provider and durable account ledger are connected.
 
 ## Delivery
 

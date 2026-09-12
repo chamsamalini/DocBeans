@@ -59,7 +59,7 @@ As a user, I can review quality warnings, edit generated content, apply document
 
 As a prospective customer, I can understand features, pricing, usage billing, taxes, privacy, and product limitations before using DocBeans.
 
-**Independent test:** Navigate through the combined Features and About landing page, Pricing, Manual, and Policy and confirm that shared navigation and footer links work.
+**Independent test:** Navigate through the About landing page, Pricing, Manual, and footer-only Policy and confirm that shared navigation and footer links work.
 
 **Acceptance scenarios**
 
@@ -67,6 +67,20 @@ As a prospective customer, I can understand features, pricing, usage billing, ta
 2. Desktop access is shown as USD 45 one time and clearly labelled coming soon until checkout and installer delivery exist.
 3. GST, VAT, or sales tax is described as dependent on billing country and local requirements.
 4. Pricing distinguishes the access fee, DocBeans-managed AI usage, and BYOK provider billing.
+
+### User Story 6 — Access account and operational portals (Priority: P1)
+
+As a user, I sign in before creating documents and can review billing, usage, and AI settings from a user portal; authorised operators have a separate admin portal.
+
+**Independent test:** Select Create Document, sign in with Google, Microsoft or a verified work email, open the document workspace, then navigate to the user portal and verify billing, device-level usage and authenticator MFA controls are visible.
+
+**Acceptance scenarios**
+
+1. Public navigation contains only About, Pricing, Manual, and Create Document.
+2. Create Document opens a branded account gateway before the protected workspace.
+3. The user portal shows the platform plan, billing status, generation usage, and AI settings access.
+4. The admin portal distinguishes active services from billing or access controls that still require configuration.
+5. Policy navigation appears only in the footer and covers PDPA, GDPR, and data protection.
 
 ## Functional Requirements
 
@@ -86,12 +100,18 @@ As a prospective customer, I can understand features, pricing, usage billing, ta
 - **FR-014:** Allow generated job descriptions to be edited before copying.
 - **FR-015:** Provide document font and theme presets independent of interface typography.
 - **FR-016:** Support print/save-to-PDF and destination-ready copy for LinkedIn and job portals.
-- **FR-017:** Use a combined Features and About page as the `/` landing page, provide the document workspace at `/create`, retain Pricing, Manual, Settings, and Policy routes, and redirect legacy `/about` links to the About section.
+- **FR-017:** Use About as the `/` landing page, include product features and updates within it, provide the protected document workspace at `/create`, and redirect legacy `/about` links to the About section.
 - **FR-018:** Display the USD 7 monthly web platform fee and USD 45 one-time desktop price.
 - **FR-019:** State that taxes depend on the billing country and applicable local rules.
 - **FR-020:** Keep desktop checkout and installer controls inactive and clearly labelled until delivery is implemented.
 - **FR-021:** Provide document-level controls for preset theme, font, body colour, header colour, subheader colour, header layout, and subheader treatment.
 - **FR-022:** Let users generate genuine PDF, DOCX, PPTX, TXT, and XLSX files from the reviewed document.
+- **FR-023:** Use white page backgrounds across public, document, settings, account, user-portal, and admin-portal surfaces.
+- **FR-024:** Limit the public header to About, Pricing, Manual, and Create Document; show Policy only in the footer.
+- **FR-025:** Route Create Document through a branded Supabase gateway supporting Google, Microsoft and verified email/password accounts; protect `/create`, `/settings`, and generation endpoints server-side.
+- **FR-026:** Provide a protected user portal with billing status, AI settings access, device-level generation totals, and TOTP authenticator enrolment.
+- **FR-027:** Restrict the admin portal with a server-side email allowlist, require an AAL2 authenticator session, and report provider, billing, and compliance readiness.
+- **FR-028:** Cover Singapore PDPA, GDPR, data protection, retention, responsible AI, and terms in the policy page.
 
 ## Edge Cases
 
@@ -111,10 +131,13 @@ As a prospective customer, I can understand features, pricing, usage billing, ta
 - **SC-005:** All public product-information pages use consistent DocBeans branding, typography, navigation, and policy links.
 - **SC-006:** The production build succeeds and all implemented routes respond without a blocking runtime error.
 - **SC-007:** Styling choices remain visible in the generated preview and supported downloaded output.
+- **SC-008:** Unauthenticated visitors cannot open the document or settings workspace without starting the platform sign-in flow.
+- **SC-009:** Public navigation contains no separate Features, Updates, Settings, Admin, or Policy header links.
 
 ## Out of Scope for Current Beta
 
 - Payment processing and subscription management.
+- Persistent account-wide usage storage and administrator role provisioning.
 - A downloadable desktop installer.
 - Automatic publishing to LinkedIn or third-party job portals.
 - Legal, medical, or financial professional advice.
