@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, Bean, Bell, BookOpen, Check, CheckCircle2, ChevronDown,
+  ArrowLeft, ArrowRight, Bell, BookOpen, Check, CheckCircle2, ChevronDown,
   CircleHelp, ClipboardCheck, Copy, DollarSign, Download, FileCheck2, FileText, FolderKanban,
   LayoutTemplate, LockKeyhole, Plus, Search, Settings, ShieldCheck, Sparkles,
   Trash2, UploadCloud, Users, WandSparkles, X, Zap,
@@ -13,6 +13,7 @@ import { formatGeneratedJob } from '@/lib/job-generation';
 import type { GeneratedJobDocument, GeneratedQuickDocument, GenerationUsage, JobGenerationResponse, QuickGenerationResponse } from '@/lib/job-generation';
 import { loadAiSettings } from '@/lib/ai-settings';
 import { SiteFooter } from '@/components/site-footer';
+import { BrandLogo } from '@/components/brand-logo';
 
 type Requirement = { id: number; text: string; mandatory: boolean };
 type Source = { id: number; name: string; meta: string; status: 'Ready' | 'Checking' };
@@ -137,8 +138,7 @@ export default function Home() {
     <main className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 flex h-16 items-center border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6 xl:px-7">
         <div className="flex w-56 items-center gap-2.5 xl:w-64">
-          <span className="grid size-9 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm"><Bean className="size-5" /></span>
-          <span className="flex flex-col leading-none"><span className="font-brand text-[9px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">chams.ai</span><span className="mt-1 text-base font-semibold tracking-[-0.02em]">DocBeans</span></span>
+          <BrandLogo />
           <Badge className="ml-1 bg-accent text-[10px] text-accent-foreground">BETA</Badge>
         </div>
         <label className="mx-auto hidden h-9 w-full max-w-sm items-center gap-2 rounded-xl border border-border bg-muted/55 px-3 text-sm text-muted-foreground md:flex"><Search className="size-4" /><input aria-label="Search documents" className="min-w-0 flex-1 bg-transparent outline-none" placeholder="Search documents" /><kbd className="rounded-md border bg-background px-1.5 py-0.5 text-[10px]">⌘ K</kbd></label>
@@ -350,7 +350,7 @@ function QuickDraft({ type, primary, details, secondary, sender, font, theme, jo
 }
 
 function AppSidebar() {
-  return <aside className="hidden flex-col border-r border-border bg-sidebar px-3 py-5 lg:flex"><Button className="h-10 justify-start gap-2.5 rounded-xl px-3"><Plus /> New document</Button><nav aria-label="Primary" className="mt-5 space-y-1"><a className="nav-link nav-link-active" href="/"><FileText /> Documents</a><a className="nav-link" href="/features"><FolderKanban /> Features</a><a className="nav-link" href="/pricing"><LayoutTemplate /> Pricing</a><a className="nav-link" href="/manual"><BookOpen /> Manual</a><a className="nav-link" href="/about"><CircleHelp /> About DocBeans</a></nav><div className="mt-7 px-3 text-[11px] font-semibold uppercase tracking-[0.13em] text-muted-foreground">Recent</div><div className="mt-2 space-y-1"><button className="recent-item"><span className="recent-dot bg-[#16888b]" />Q3 transformation brief</button><button className="recent-item"><span className="recent-dot bg-[#f26b4f]" />Vendor assessment</button><button className="recent-item"><span className="recent-dot bg-[#123f55]" />Launch communication</button></div><div className="mt-auto rounded-xl border border-border bg-white/50 p-3"><p className="text-[11px] font-semibold text-foreground">chams.ai workspace</p><div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground"><ShieldCheck className="size-3" /> Protected knowledge</div></div><div className="mt-3 border-t border-border pt-3"><a className="nav-link" href="/settings"><Settings /> AI settings</a></div></aside>;
+  return <aside className="hidden flex-col border-r border-border bg-sidebar px-3 py-5 lg:flex"><Button className="h-10 justify-start gap-2.5 rounded-xl px-3"><Plus /> New document</Button><nav aria-label="Primary" className="mt-5 space-y-1"><a className="nav-link nav-link-active" href="/"><FileText /> Documents</a><a className="nav-link" href="/features"><FolderKanban /> Features</a><a className="nav-link" href="/pricing"><LayoutTemplate /> Pricing</a><a className="nav-link" href="/manual"><BookOpen /> Manual</a><a className="nav-link" href="/about"><CircleHelp /> About DocBeans</a></nav><div className="mt-7 px-3 text-[11px] font-semibold uppercase tracking-[0.13em] text-muted-foreground">Recent</div><div className="mt-2 space-y-1"><button className="recent-item"><span className="recent-dot bg-[#16888b]" />Q3 transformation brief</button><button className="recent-item"><span className="recent-dot bg-[#f26b4f]" />Vendor assessment</button><button className="recent-item"><span className="recent-dot bg-[#123f55]" />Launch communication</button></div><div className="mt-auto rounded-xl border border-border bg-white/50 p-3"><p className="text-[11px] font-semibold text-foreground">DocBeans workspace</p><div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground"><ShieldCheck className="size-3" /> Protected knowledge</div></div><div className="mt-3 border-t border-border pt-3"><a className="nav-link" href="/settings"><Settings /> AI settings</a></div></aside>;
 }
 
 type BriefProps = {

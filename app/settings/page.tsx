@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Bean, Check, ChevronDown, CircleHelp, FileText, KeyRound, LockKeyhole, Settings, ShieldCheck, Sparkles } from 'lucide-react';
+import { Check, ChevronDown, CircleHelp, FileText, KeyRound, LockKeyhole, Settings, ShieldCheck, Sparkles } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { clearSessionApiKey, defaultAiSettings, llmModels, loadAiSettings, saveAiSettings } from '@/lib/ai-settings';
 import type { AiSettings, CredentialMode, LlmProvider } from '@/lib/ai-settings';
 import { SiteFooter } from '@/components/site-footer';
+import { BrandLogo } from '@/components/brand-logo';
 
 export default function AiSettingsPage() {
   const [settings, setSettings] = useState<AiSettings>(defaultAiSettings);
@@ -42,12 +43,12 @@ export default function AiSettingsPage() {
 
   return <main className="min-h-screen bg-background text-foreground">
     <header className="sticky top-0 z-30 flex h-16 items-center border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6 xl:px-7">
-      <Link href="/" className="flex items-center gap-2.5" aria-label="DocBeans home"><span className="grid size-9 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm"><Bean className="size-5" /></span><span className="flex flex-col leading-none"><span className="font-brand text-[9px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">chams.ai</span><span className="mt-1 text-base font-semibold tracking-[-0.02em]">DocBeans</span></span><Badge className="ml-1 bg-accent text-[10px] text-accent-foreground">BETA</Badge></Link>
+      <Link href="/" className="flex items-center gap-2.5" aria-label="DocBeans home"><BrandLogo /><Badge className="ml-1 bg-accent text-[10px] text-accent-foreground">BETA</Badge></Link>
       <div className="ml-auto"><Link href="/" className={buttonVariants({variant:'outline',className:'h-9 bg-card'})}>Back to documents</Link></div>
     </header>
 
     <div className="grid min-h-[calc(100vh-64px)] grid-cols-1 lg:grid-cols-[245px_minmax(0,1fr)]">
-      <aside className="hidden flex-col border-r border-border bg-sidebar px-3 py-5 lg:flex"><Link href="/" className={buttonVariants({className:'h-10 justify-start gap-2.5 rounded-xl px-3'})}><FileText /> New document</Link><nav aria-label="Primary" className="mt-5 space-y-1"><Link className="nav-link" href="/"><FileText /> Documents</Link><Link className="nav-link" href="/features">Features</Link><Link className="nav-link" href="/pricing">Pricing</Link><Link className="nav-link" href="/manual">Manual</Link><Link className="nav-link" href="/about"><CircleHelp /> About DocBeans</Link></nav><div className="mt-auto rounded-xl border border-border bg-white/50 p-3"><p className="text-[11px] font-semibold text-foreground">chams.ai workspace</p><div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground"><ShieldCheck className="size-3" /> Protected knowledge</div></div><div className="mt-3 border-t border-border pt-3"><Link className="nav-link nav-link-active" href="/settings"><Settings /> AI settings</Link></div></aside>
+      <aside className="hidden flex-col border-r border-border bg-sidebar px-3 py-5 lg:flex"><Link href="/" className={buttonVariants({className:'h-10 justify-start gap-2.5 rounded-xl px-3'})}><FileText /> New document</Link><nav aria-label="Primary" className="mt-5 space-y-1"><Link className="nav-link" href="/"><FileText /> Documents</Link><Link className="nav-link" href="/features">Features</Link><Link className="nav-link" href="/pricing">Pricing</Link><Link className="nav-link" href="/manual">Manual</Link><Link className="nav-link" href="/about"><CircleHelp /> About DocBeans</Link></nav><div className="mt-auto rounded-xl border border-border bg-white/50 p-3"><p className="text-[11px] font-semibold text-foreground">DocBeans workspace</p><div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground"><ShieldCheck className="size-3" /> Protected knowledge</div></div><div className="mt-3 border-t border-border pt-3"><Link className="nav-link nav-link-active" href="/settings"><Settings /> AI settings</Link></div></aside>
 
       <section className="px-4 py-7 sm:px-8 xl:px-12 xl:py-9"><div className="mx-auto max-w-[920px]">
         <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground"><Link href="/">DocBeans</Link><span>/</span><span>Settings</span></div>
