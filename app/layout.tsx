@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Montserrat, Source_Sans_3 } from 'next/font/google';
+import { Montserrat, Playfair_Display, Source_Sans_3 } from 'next/font/google';
 import './globals.css';
 
 const sourceSans = Source_Sans_3({
@@ -9,6 +9,11 @@ const sourceSans = Source_Sans_3({
 
 const montserrat = Montserrat({
   variable: '--font-montserrat',
+  subsets: ['latin'],
+});
+
+const playfair = Playfair_Display({
+  variable: '--font-playfair',
   subsets: ['latin'],
 });
 
@@ -37,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${sourceSans.variable} ${montserrat.variable} antialiased`}
+        className={`${sourceSans.variable} ${montserrat.variable} ${playfair.variable} font-sans antialiased`}
       >
         {children}
       </body>
