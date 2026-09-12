@@ -32,6 +32,7 @@ Maintain DocBeans as a document-first web application with adaptive Quick Docume
 app/
 ├── api/generate/route.ts
 ├── api/generate-document/route.ts
+├── create/page.tsx
 ├── features/page.tsx
 ├── pricing/page.tsx
 ├── manual/page.tsx
@@ -55,7 +56,7 @@ specs/001-docbeans-product/
 
 ## Design Decisions
 
-1. Keep Quick Document as the default working surface.
+1. Use Features as the public landing page and keep Quick Document as the default working surface at `/create`.
 2. Store provider/model preference locally and BYOK credentials in session storage.
 3. Determine BYOK billing from a request that explicitly identifies BYOK and supplies a provider key.
 4. Keep provider-cost values as estimates based on returned token usage and configured rates.

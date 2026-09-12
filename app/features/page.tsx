@@ -1,9 +1,11 @@
+import Link from 'next/link';
 import {
-  BookOpenCheck, BrainCircuit, Download, FileCheck2, Files,
+  ArrowRight, BookOpenCheck, BrainCircuit, Download, FileCheck2, Files,
   KeyRound, LayoutTemplate, Palette, ReceiptText, Share2, ShieldCheck, UserRoundPen,
   WandSparkles,
 } from 'lucide-react';
 import { MarketingPage } from '@/components/marketing-page';
+import { buttonVariants } from '@/components/ui/button';
 
 const groups = [
   {
@@ -47,6 +49,10 @@ export default function FeaturesPage() {
     title="A focused path from intent to a reviewed document."
     intro="DocBeans combines document-specific guidance, flexible AI access, visible quality controls and professional output—without turning a simple writing task into a complex workflow."
   >
+    <div className="mb-12 flex flex-wrap gap-3">
+      <Link href="/create" className={buttonVariants({className:'h-11 gap-2 px-5'})}>Create a document <ArrowRight className="size-4" /></Link>
+      <Link href="/pricing" className={buttonVariants({variant:'outline',className:'h-11 px-5'})}>View pricing</Link>
+    </div>
     <div className="space-y-12">
       {groups.map(group=><section key={group.label}>
         <div className="grid gap-4 lg:grid-cols-[.75fr_1.25fr] lg:gap-10">

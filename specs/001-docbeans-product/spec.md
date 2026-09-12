@@ -86,7 +86,7 @@ As a prospective customer, I can understand features, pricing, usage billing, ta
 - **FR-014:** Allow generated job descriptions to be edited before copying.
 - **FR-015:** Provide document font and theme presets independent of interface typography.
 - **FR-016:** Support print/save-to-PDF and destination-ready copy for LinkedIn and job portals.
-- **FR-017:** Provide Features, Pricing, Manual, About, Settings, and Policy routes.
+- **FR-017:** Use Features as the `/` landing page, provide the document workspace at `/create`, and retain Features, Pricing, Manual, About, Settings, and Policy routes.
 - **FR-018:** Display the USD 7 monthly web platform fee and USD 45 one-time desktop price.
 - **FR-019:** State that taxes depend on the billing country and applicable local rules.
 - **FR-020:** Keep desktop checkout and installer controls inactive and clearly labelled until delivery is implemented.

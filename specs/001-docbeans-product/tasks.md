@@ -19,13 +19,14 @@
 - [x] T012 Expand `app/features/page.tsx` to reflect the implemented document, AI, review, delivery, and access capabilities
 - [x] T013 Create the Spec Kit constitution, product specification, implementation plan, tasks, and requirements checklist
 - [x] T014 Verify the production build and affected product-information routes
+- [x] T015 Make Features the landing page and move the document workspace to `/create`
 
 ## Planned commercial and desktop work
 
-- [ ] T015 Define checkout, subscription lifecycle, invoices, refunds, and tax-calculation requirements
-- [ ] T016 Connect a payment provider for USD 7 monthly platform subscriptions
-- [ ] T017 Design desktop licensing for the USD 45 one-time purchase
-- [ ] T018 Package, sign, and verify the desktop installer
-- [ ] T019 Implement secure post-purchase desktop download delivery
-- [ ] T020 Define desktop updates, supported operating systems, and upgrade policy
-- [ ] T021 Add automated billing-accounting tests for managed AI and BYOK
+- [ ] T016 Define checkout, subscription lifecycle, invoices, refunds, and tax-calculation requirements
+- [ ] T017 Connect a payment provider for USD 7 monthly platform subscriptions
+- [ ] T018 Design desktop licensing for the USD 45 one-time purchase
+- [ ] T019 Package, sign, and verify the desktop installer
+- [ ] T020 Implement secure post-purchase desktop download delivery
+- [ ] T021 Define desktop updates, supported operating systems, and upgrade policy
+- [ ] T022 Add automated billing-accounting tests for managed AI and BYOK
