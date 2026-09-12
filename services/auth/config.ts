@@ -9,11 +9,18 @@ function runtimeValue(name: string) {
 }
 
 export function getConfiguredAuthProvider(): AuthProvider {
-  return runtimeValue('DOCBEANS_AUTH_PROVIDER').toLowerCase() === 'auth0' ? 'auth0' : 'supabase';
+  const provider = runtimeValue('DOCBEANS_AUTH_PROVIDER').toLowerCase();
+  if (provider === 'disabled') return 'disabled';
+  return provider === 'auth0' ? 'auth0' : 'supabase';
+}
+
+export function isAuthenticationDisabled() {
+  return getConfiguredAuthProvider() === 'disabled';
 }
 
 export function getPublicAuthConfig(): PublicAuthConfig | null {
   const provider = getConfiguredAuthProvider();
+  if (provider === 'disabled') return null;
   if (provider === 'supabase') {
     const endpoint = runtimeValue('SUPABASE_URL') || runtimeValue('NEXT_PUBLIC_SUPABASE_URL');
     const publicKey = runtimeValue('SUPABASE_PUBLISHABLE_KEY') || runtimeValue('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY');

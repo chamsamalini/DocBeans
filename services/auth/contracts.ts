@@ -1,4 +1,4 @@
-export type AuthProvider = 'supabase' | 'auth0';
+export type AuthProvider = 'disabled' | 'supabase' | 'auth0';
 export type SocialProvider = 'google' | 'microsoft';
 export type AssuranceLevel = 'aal1' | 'aal2' | null;
 

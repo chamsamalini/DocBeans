@@ -35,6 +35,7 @@
 - [x] T028 Remove redundant uppercase page descriptors while preserving useful in-page section labels
 - [x] T039 Apply black body text and the DocBeans logo orange to the shared button system
 - [x] T040 Add the Petreltech product attribution to the shared footer
+- [x] T041 Add temporary owner-only no-login mode with direct workspace and dual-portal access
 
 ## Planned commercial and desktop work
 

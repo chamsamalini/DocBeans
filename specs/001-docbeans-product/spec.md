@@ -133,6 +133,7 @@ As the product owner, I can replace the authentication provider without changing
 - **FR-034:** Use black primary body text throughout the light interface and apply the DocBeans logo orange to primary, outline, secondary, and link-style action buttons with accessible label contrast.
 - **FR-035:** Identify DocBeans as a product of Petreltech in the shared application footer.
 - **FR-036:** Allow administrators to use the standard User Portal and switch to the Admin Portal, while retaining administrator allowlist and AAL2 authenticator checks for administrative functions.
+- **FR-037:** Support a temporary disabled-authentication mode for an owner-restricted Site, bypassing the DocBeans login and MFA screens while routing Create Document directly to the workspace; require managed authentication to be restored before access is widened.
 
 ## Edge Cases
 
