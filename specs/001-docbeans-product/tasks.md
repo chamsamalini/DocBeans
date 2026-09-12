@@ -41,7 +41,7 @@
 - [ ] T029 Define checkout, subscription lifecycle, invoices, refunds, and tax-calculation requirements
 - [ ] T030 Connect a payment provider for USD 7 monthly platform subscriptions
 - [ ] T031 Add durable account-level usage and billing history
-- [ ] T032 Configure an administrator email allowlist before widening Site access
+- [x] T032 Configure the Site owner in the administrator email allowlist while preserving User Portal access
 - [ ] T033 Design desktop licensing for the USD 45 one-time purchase
 - [ ] T034 Package, sign, and verify the desktop installer
 - [ ] T035 Implement secure post-purchase desktop download delivery

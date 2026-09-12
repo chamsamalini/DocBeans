@@ -132,6 +132,7 @@ As the product owner, I can replace the authentication provider without changing
 - **FR-033:** Present each page with its primary heading directly, without a redundant uppercase descriptor above the page title.
 - **FR-034:** Use black primary body text throughout the light interface and apply the DocBeans logo orange to primary, outline, secondary, and link-style action buttons with accessible label contrast.
 - **FR-035:** Identify DocBeans as a product of Petreltech in the shared application footer.
+- **FR-036:** Allow administrators to use the standard User Portal and switch to the Admin Portal, while retaining administrator allowlist and AAL2 authenticator checks for administrative functions.
 
 ## Edge Cases
 
