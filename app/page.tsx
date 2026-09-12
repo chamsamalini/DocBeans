@@ -3,18 +3,23 @@
 import { useState } from 'react';
 import {
   ArrowLeft, ArrowRight, Bean, Bell, BookOpen, Check, CheckCircle2, ChevronDown,
-  CircleHelp, ClipboardCheck, Download, FileCheck2, FileText, FolderKanban,
+  CircleHelp, ClipboardCheck, Copy, DollarSign, Download, FileCheck2, FileText, FolderKanban,
   LayoutTemplate, LockKeyhole, Plus, Search, Settings, ShieldCheck, Sparkles,
   Trash2, UploadCloud, Users, WandSparkles, X, Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { formatGeneratedJob } from '@/lib/job-generation';
+import type { GeneratedJobDocument, GeneratedQuickDocument, GenerationUsage, JobGenerationResponse, QuickGenerationResponse } from '@/lib/job-generation';
+import { loadAiSettings } from '@/lib/ai-settings';
+import { SiteFooter } from '@/components/site-footer';
 
 type Requirement = { id: number; text: string; mandatory: boolean };
 type Source = { id: number; name: string; meta: string; status: 'Ready' | 'Checking' };
 type QuickDocumentType = 'appreciation' | 'recommendation' | 'testimonial' | 'thank-you' | 'cover-letter' | 'quotation' | 'proposal' | 'project-brief' | 'executive-summary' | 'curriculum' | 'job-description' | 'memo' | 'announcement' | 'meeting-agenda' | 'meeting-minutes' | 'sop' | 'leave' | 'medical-leave';
 type DocumentFont = 'source-sans' | 'playfair' | 'montserrat' | 'georgia' | 'times';
 type DocumentTheme = 'minimal' | 'corporate' | 'warm' | 'editorial' | 'formal';
+type JobPostDetails = { qualifications: string; preferredQualifications: string; benefits: string; application: string; companyUrl: string };
 type QuickDocumentConfig = {
   label: string; noun: string; heading: string; description: string;
   primaryLabel: string; primaryPlaceholder: string;
@@ -104,6 +109,7 @@ export default function Home() {
   const [quickFont, setQuickFont] = useState<DocumentFont>('source-sans');
   const [quickTheme, setQuickTheme] = useState<DocumentTheme>('minimal');
   const [quickGenerated, setQuickGenerated] = useState(false);
+  const [jobPost, setJobPost] = useState<JobPostDetails>({ qualifications: '', preferredQualifications: '', benefits: '', application: '', companyUrl: '' });
 
   const quickConfig = quickDocuments[quickType];
   const title = mode === 'quick' ? (quickGenerated ? `Your ${quickConfig.label.toLowerCase()}` : quickConfig.heading) : screen === 'draft' ? 'Transformation brief' : screen === 'review' ? 'Review your interpreted brief' : 'Build your document brief';
@@ -111,6 +117,7 @@ export default function Home() {
 
   const changeQuickType = (value: QuickDocumentType) => {
     setQuickType(value); setRecipient(''); setAppreciation(''); setQuickSecondary('');
+    setJobPost({ qualifications: '', preferredQualifications: '', benefits: '', application: '', companyUrl: '' });
     setQuickTone(quickDocuments[value].tones[0]); setQuickGenerated(false);
   };
 
@@ -135,7 +142,7 @@ export default function Home() {
           <Badge className="ml-1 bg-accent text-[10px] text-accent-foreground">BETA</Badge>
         </div>
         <label className="mx-auto hidden h-9 w-full max-w-sm items-center gap-2 rounded-xl border border-border bg-muted/55 px-3 text-sm text-muted-foreground md:flex"><Search className="size-4" /><input aria-label="Search documents" className="min-w-0 flex-1 bg-transparent outline-none" placeholder="Search documents" /><kbd className="rounded-md border bg-background px-1.5 py-0.5 text-[10px]">⌘ K</kbd></label>
-        <div className="ml-auto flex w-56 items-center justify-end gap-1 xl:w-64"><Button aria-label="Help" variant="ghost" size="icon"><CircleHelp /></Button><Button aria-label="Notifications" variant="ghost" size="icon"><Bell /></Button><button aria-label="Open profile" className="ml-1 grid size-8 place-items-center rounded-full bg-primary text-xs font-semibold text-white">HM</button></div>
+        <div className="ml-auto flex w-56 items-center justify-end gap-1 xl:w-64"><a href="/settings" aria-label="AI settings" className="grid size-9 place-items-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"><Settings className="size-4" /></a><Button aria-label="Help" variant="ghost" size="icon"><CircleHelp /></Button><Button aria-label="Notifications" variant="ghost" size="icon"><Bell /></Button><button aria-label="Open profile" className="ml-1 grid size-8 place-items-center rounded-full bg-primary text-xs font-semibold text-white">HM</button></div>
       </header>
 
       <div className="grid min-h-[calc(100vh-64px)] grid-cols-1 lg:grid-cols-[245px_minmax(0,1fr)]">
@@ -143,34 +150,83 @@ export default function Home() {
         <section className="px-4 py-7 sm:px-8 xl:px-12 xl:py-9"><div className="mx-auto max-w-[1140px]">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div><div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground"><span>Documents</span><span>/</span><span>{mode === 'quick' ? quickConfig.label : screen === 'draft' ? 'Transformation brief' : 'Advanced brief'}</span></div><h1 className="font-heading text-3xl font-normal tracking-[-0.025em] sm:text-[38px]">{title}</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{description}</p></div>
-            <div className="flex items-center gap-2"><Badge variant="outline" className="h-7 gap-1.5 bg-card px-3 text-muted-foreground"><span className={`size-1.5 rounded-full ${(mode === 'quick' ? quickGenerated : screen === 'draft') ? 'bg-emerald-500' : 'bg-amber-400'}`} /> {(mode === 'quick' ? quickGenerated : screen === 'draft') ? 'Draft ready' : 'Draft'}</Badge>{(mode === 'quick' ? quickGenerated : screen === 'draft') ? <Button variant="outline" className="h-9 bg-card"><Download /> Export</Button> : null}</div>
+            <div className="flex items-center gap-2"><Badge variant="outline" className="h-7 gap-1.5 bg-card px-3 text-muted-foreground"><span className={`size-1.5 rounded-full ${(mode === 'quick' ? quickGenerated : screen === 'draft') ? 'bg-emerald-500' : 'bg-amber-400'}`} /> {mode === 'quick' && quickGenerated ? 'Generated draft' : screen === 'draft' ? 'Draft ready' : 'Draft'}</Badge>{(mode === 'quick' ? quickGenerated : screen === 'draft') ? <Button variant="outline" className="h-9 bg-card" onClick={() => window.print()}><Download /> Print / Save PDF</Button> : null}</div>
           </div>
 
           <div className="mt-6 flex items-center gap-2 rounded-lg border border-border bg-card p-1.5 sm:w-fit"><button onClick={() => setMode('quick')} className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${mode === 'quick' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}>Quick document</button><button onClick={() => setMode('advanced')} className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${mode === 'advanced' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}>Advanced brief</button></div>
 
-          {mode === 'quick' && <QuickDocumentScreen documentType={quickType} onTypeChange={changeQuickType} recipient={recipient} setRecipient={setRecipient} details={appreciation} setDetails={setAppreciation} secondary={quickSecondary} setSecondary={setQuickSecondary} sender={sender} setSender={setSender} tone={quickTone} setTone={setQuickTone} font={quickFont} setFont={setQuickFont} theme={quickTheme} setTheme={setQuickTheme} generated={quickGenerated} onGenerate={() => setQuickGenerated(true)} onEdit={() => setQuickGenerated(false)} />}
+          {mode === 'quick' && <QuickDocumentScreen documentType={quickType} onTypeChange={changeQuickType} recipient={recipient} setRecipient={setRecipient} details={appreciation} setDetails={setAppreciation} secondary={quickSecondary} setSecondary={setQuickSecondary} sender={sender} setSender={setSender} tone={quickTone} setTone={setQuickTone} font={quickFont} setFont={setQuickFont} theme={quickTheme} setTheme={setQuickTheme} jobPost={jobPost} setJobPost={setJobPost} generated={quickGenerated} onGenerate={() => setQuickGenerated(true)} onEdit={() => setQuickGenerated(false)} />}
           {mode === 'advanced' && screen === 'brief' && <BriefScreen step={step} role={role} setRole={setRole} customRole={customRole} setCustomRole={setCustomRole} purpose={purpose} setPurpose={setPurpose} audience={audience} setAudience={setAudience} outcome={outcome} setOutcome={setOutcome} requirements={requirements} setRequirements={setRequirements} newReq={newReq} setNewReq={setNewReq} addRequirement={addRequirement} sources={sources} setSources={setSources} onBack={() => setStep((s) => Math.max(0, s - 1))} onNext={() => step === 4 ? setScreen('review') : setStep((s) => Math.min(4, s + 1))} />}
           {mode === 'advanced' && screen === 'review' && <ReviewScreen role={role === 'Custom role' ? customRole : role} purpose={purpose} audience={audience} outcome={outcome} requirements={requirements} sources={sources} generating={generating} onBack={() => { setScreen('brief'); setStep(4); }} onGenerate={generate} />}
           {mode === 'advanced' && screen === 'draft' && <DraftScreen requirements={requirements} onEditBrief={() => { setScreen('brief'); setStep(0); }} />}
 
         </div></section>
       </div>
+      <SiteFooter />
     </main>
   );
 }
 
-function QuickDocumentScreen({ documentType, onTypeChange, recipient, setRecipient, details, setDetails, secondary, setSecondary, sender, setSender, tone, setTone, font, setFont, theme, setTheme, generated, onGenerate, onEdit }: { documentType:QuickDocumentType; onTypeChange:(v:QuickDocumentType)=>void; recipient:string; setRecipient:(v:string)=>void; details:string; setDetails:(v:string)=>void; secondary:string; setSecondary:(v:string)=>void; sender:string; setSender:(v:string)=>void; tone:string; setTone:(v:string)=>void; font:DocumentFont; setFont:(v:DocumentFont)=>void; theme:DocumentTheme; setTheme:(v:DocumentTheme)=>void; generated:boolean; onGenerate:()=>void; onEdit:()=>void }) {
+function QuickDocumentScreen({ documentType, onTypeChange, recipient, setRecipient, details, setDetails, secondary, setSecondary, sender, setSender, tone, setTone, font, setFont, theme, setTheme, jobPost, setJobPost, generated, onGenerate, onEdit }: { documentType:QuickDocumentType; onTypeChange:(v:QuickDocumentType)=>void; recipient:string; setRecipient:(v:string)=>void; details:string; setDetails:(v:string)=>void; secondary:string; setSecondary:(v:string)=>void; sender:string; setSender:(v:string)=>void; tone:string; setTone:(v:string)=>void; font:DocumentFont; setFont:(v:DocumentFont)=>void; theme:DocumentTheme; setTheme:(v:DocumentTheme)=>void; jobPost:JobPostDetails; setJobPost:React.Dispatch<React.SetStateAction<JobPostDetails>>; generated:boolean; onGenerate:()=>void; onEdit:()=>void }) {
   const config = quickDocuments[documentType];
   const preset = documentThemes[theme];
+  const [copied, setCopied] = useState<'linkedin' | 'portal' | null>(null);
+  const [jobResult, setJobResult] = useState<GeneratedJobDocument | null>(null);
+  const [quickResult, setQuickResult] = useState<GeneratedQuickDocument | null>(null);
+  const [usage, setUsage] = useState<GenerationUsage | null>(null);
+  const [notice, setNotice] = useState('');
+  const [generationError, setGenerationError] = useState('');
+  const [generatingJob, setGeneratingJob] = useState(false);
+  const [editingJob, setEditingJob] = useState(false);
+  const isJobPost = documentType === 'job-description';
 
-  if (generated) return <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+  const copyJobPost = async (target:'linkedin'|'portal') => {
+    if (!jobResult) return;
+    await navigator.clipboard.writeText(formatGeneratedJob(jobResult, target));
+    setCopied(target);
+    window.setTimeout(() => setCopied(null), 1800);
+  };
+
+  const handleGenerate = async () => {
+    setGeneratingJob(true);
+    setGenerationError('');
+    try {
+      const aiSettings = loadAiSettings();
+      const response = await fetch(isJobPost ? '/api/generate' : '/api/generate-document', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(aiSettings.credentialMode === 'byok' && aiSettings.apiKey ? { 'X-Provider-API-Key':aiSettings.apiKey } : {}) },
+        body: JSON.stringify(isJobPost ? { provider:aiSettings.provider, model:aiSettings.model, title:recipient, context:secondary, organisation:sender, companyUrl:jobPost.companyUrl, responsibilities:details, qualifications:jobPost.qualifications, preferredQualifications:jobPost.preferredQualifications, benefits:jobPost.benefits, application:jobPost.application, tone } : { provider:aiSettings.provider, model:aiSettings.model, documentType, primary:recipient, details, secondary, sender, tone }),
+      });
+      const result = await response.json() as (JobGenerationResponse | QuickGenerationResponse) & { error?:string };
+      if (!response.ok) throw new Error(result.error || 'DocBeans could not generate this job description.');
+      if (isJobPost) setJobResult((result as JobGenerationResponse).document);
+      else setQuickResult((result as QuickGenerationResponse).document);
+      setUsage(result.usage);
+      setNotice(result.notice || '');
+      setEditingJob(false);
+      onGenerate();
+    } catch (error) {
+      setGenerationError(error instanceof Error ? error.message : 'DocBeans could not generate this job description.');
+    } finally {
+      setGeneratingJob(false);
+    }
+  };
+
+  if (generated) return <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
     <article className="rounded-[20px] border border-t-4 px-7 py-9 shadow-[0_16px_50px_rgba(0,0,0,0.06)] transition-colors sm:px-12 sm:py-12" style={{backgroundColor:preset.surface,borderColor:preset.border,borderTopColor:preset.accent}}>
-      <QuickDraft type={documentType} primary={recipient.trim()} details={details.trim()} secondary={secondary.trim()} sender={sender.trim()} font={font} theme={theme} />
+      {isJobPost && jobResult ? <GeneratedJobPreview document={jobResult} setDocument={setJobResult} editing={editingJob} font={font} theme={theme} /> : quickResult ? <GeneratedQuickPreview document={quickResult} font={font} theme={theme} /> : <QuickDraft type={documentType} primary={recipient.trim()} details={details.trim()} secondary={secondary.trim()} sender={sender.trim()} font={font} theme={theme} jobPost={jobPost} />}
     </article>
-    <aside className="space-y-4"><div className="rounded-[18px] border border-border bg-card p-5"><div className="flex items-center gap-2 text-sm font-semibold"><CheckCircle2 className="size-4" /> Draft ready</div><dl className="mt-4 space-y-3 text-xs"><div><dt className="text-muted-foreground">Document</dt><dd className="mt-1 font-medium">{config.label}</dd></div><div><dt className="text-muted-foreground">Style</dt><dd className="mt-1 font-medium">{documentFonts[font].label.split(' · ')[0]} · {preset.label}</dd></div><div><dt className="text-muted-foreground">Tone</dt><dd className="mt-1 font-medium">{tone}</dd></div><div><dt className="text-muted-foreground">Prepared for</dt><dd className="mt-1 font-medium">{recipient}</dd></div></dl><Button variant="outline" className="mt-5 w-full" onClick={onEdit}>Edit details</Button></div><div className="rounded-[18px] bg-primary p-5 text-primary-foreground"><p className="text-sm font-semibold">Relevant by design</p><p className="mt-2 text-xs leading-5 text-white/70">The questions, structure, typography and visual theme follow the choices you make.</p></div></aside>
+    <aside className="space-y-4">
+      <div className="rounded-[18px] border border-border bg-card p-5"><div className="flex items-center gap-2 text-sm font-semibold"><CheckCircle2 className="size-4" /> {jobResult?.quality.status === 'needs_review' ? 'Needs your review' : 'Draft ready'}</div><dl className="mt-4 space-y-3 text-xs"><div><dt className="text-muted-foreground">Document</dt><dd className="mt-1 font-medium">{config.label}</dd></div><div><dt className="text-muted-foreground">Style</dt><dd className="mt-1 font-medium">{documentFonts[font].label.split(' · ')[0]} · {preset.label}</dd></div><div><dt className="text-muted-foreground">Tone</dt><dd className="mt-1 font-medium">{tone}</dd></div>{jobResult && <div><dt className="text-muted-foreground">Quality score</dt><dd className="mt-1 font-medium">{jobResult.quality.score}/100</dd></div>}</dl><div className="mt-5 grid gap-2"><Button variant="outline" className="w-full" onClick={onEdit}>Edit brief</Button>{jobResult && <Button variant="outline" className="w-full" onClick={() => setEditingJob(value=>!value)}>{editingJob ? 'Finish editing' : 'Edit generated content'}</Button>}</div></div>
+      {jobResult && <div className="rounded-[18px] border border-border bg-card p-5"><p className="text-sm font-semibold">Quality checks</p><div className="mt-3 space-y-3">{jobResult.quality.checks.map(check=><div key={check.label} className="flex gap-2.5 text-xs"><span className={`mt-0.5 size-2 shrink-0 rounded-full ${check.status === 'pass' ? 'bg-emerald-500' : 'bg-amber-400'}`} /><div><p className="font-medium">{check.label}</p><p className="mt-0.5 leading-4 text-muted-foreground">{check.message}</p></div></div>)}</div>{jobResult.quality.missingInformation.length > 0 && <div className="mt-4 rounded-lg bg-amber-50 p-3"><p className="text-xs font-semibold text-amber-900">Complete before publishing</p><ul className="mt-2 list-disc space-y-1 pl-4 text-[11px] text-amber-900/80">{jobResult.quality.missingInformation.map(item=><li key={item}>{item}</li>)}</ul></div>}</div>}
+      {isJobPost && jobResult && <div className="rounded-[18px] border border-border bg-card p-5"><p className="text-sm font-semibold">{jobResult.quality.status === 'ready' ? 'Ready to publish' : 'Copy after review'}</p><p className="mt-2 text-xs leading-5 text-muted-foreground">Copy clean, plain text formatted for the destination.</p>{jobResult.quality.status === 'needs_review' && <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-[11px] leading-4 text-amber-900">This draft has review items. Copying does not mark it approved.</p>}<div className="mt-4 space-y-2"><Button className="w-full justify-start" onClick={() => copyJobPost('linkedin')}><Copy /> {copied === 'linkedin' ? 'Copied for LinkedIn' : 'Copy for LinkedIn'}</Button><Button variant="outline" className="w-full justify-start" onClick={() => copyJobPost('portal')}><Copy /> {copied === 'portal' ? 'Copied for job portal' : 'Copy for job portal'}</Button></div></div>}
+    </aside>
+    {usage && <UsageCard usage={usage} notice={notice} />}
   </div>;
 
-  const preparedByLabel = ['quotation', 'proposal', 'project-brief', 'executive-summary', 'curriculum', 'job-description', 'meeting-agenda', 'meeting-minutes', 'sop'].includes(documentType) ? 'Prepared by' : 'From';
+  const preparedByLabel = isJobPost ? 'Organisation' : ['quotation', 'proposal', 'project-brief', 'executive-summary', 'curriculum', 'meeting-agenda', 'meeting-minutes', 'sop'].includes(documentType) ? 'Prepared by' : 'From';
+  const followUps = isJobPost ? [!secondary.trim() && 'Add location, workplace model and employment type.', !sender.trim() && 'Add the organisation name.', !jobPost.application.trim() && 'Add an application method or closing date.'].filter(Boolean) as string[] : [];
+
   return <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
     <section className="rounded-[20px] border border-border bg-card shadow-[0_16px_50px_rgba(0,0,0,0.06)]">
       <div className="border-b border-border px-6 py-5 sm:px-8"><div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-md bg-primary text-primary-foreground"><Sparkles className="size-4" /></span><div><p className="text-xs font-semibold uppercase tracking-[.12em] text-muted-foreground">Quick document</p><h2 className="text-lg font-normal">Just the relevant details</h2></div></div></div>
@@ -178,17 +234,94 @@ function QuickDocumentScreen({ documentType, onTypeChange, recipient, setRecipie
         <div><label htmlFor="document-type" className="field-label">What do you want to create?</label><div className="relative mt-2"><select id="document-type" className="field-control appearance-none pr-10" value={documentType} onChange={(e)=>onTypeChange(e.target.value as QuickDocumentType)}><optgroup label="People and career"><option value="appreciation">Appreciation letter</option><option value="thank-you">Thank-you email</option><option value="recommendation">Recommendation letter</option><option value="testimonial">Testimonial</option><option value="cover-letter">Cover letter</option><option value="job-description">Job description</option></optgroup><optgroup label="Business and planning"><option value="quotation">Business quotation</option><option value="proposal">Business proposal</option><option value="project-brief">Project brief</option><option value="executive-summary">Executive summary</option><option value="curriculum">Curriculum structure</option><option value="sop">Standard operating procedure</option></optgroup><optgroup label="Communication and meetings"><option value="memo">Internal memo</option><option value="announcement">Announcement</option><option value="meeting-agenda">Meeting agenda</option><option value="meeting-minutes">Meeting minutes</option></optgroup><optgroup label="Leave requests"><option value="leave">Leave request</option><option value="medical-leave">Medical leave request</option></optgroup></select><ChevronDown className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" /></div></div>
         <div><label htmlFor="quick-primary" className="field-label">{config.primaryLabel} <span>*</span></label><input id="quick-primary" className="field-control mt-2" value={recipient} onChange={(e)=>setRecipient(e.target.value)} placeholder={config.primaryPlaceholder} /></div>
         <div><label htmlFor="quick-details" className="field-label">{config.detailLabel} <span>*</span></label><textarea id="quick-details" className="field-control mt-2 min-h-32 resize-none py-3" value={details} onChange={(e)=>setDetails(e.target.value)} placeholder={config.detailPlaceholder} /><p className="field-help">{config.detailHelp}</p></div>
-        {config.secondaryLabel && <div><label htmlFor="quick-secondary" className="field-label">{config.secondaryLabel}</label><input id="quick-secondary" className="field-control mt-2" value={secondary} onChange={(e)=>setSecondary(e.target.value)} placeholder={config.secondaryPlaceholder} /></div>}
-        <div className="grid gap-5 md:grid-cols-2"><div><label htmlFor="quick-tone" className="field-label">Tone</label><div className="relative mt-2"><select id="quick-tone" className="field-control appearance-none pr-10" value={tone} onChange={(e)=>setTone(e.target.value)}>{config.tones.map(item=><option key={item}>{item}</option>)}</select><ChevronDown className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" /></div></div><div><label htmlFor="sender" className="field-label">{preparedByLabel} <span className="font-normal text-muted-foreground">(optional)</span></label><input id="sender" className="field-control mt-2" value={sender} onChange={(e)=>setSender(e.target.value)} placeholder="Your name or organisation" /></div></div>
+        {config.secondaryLabel && <div><label htmlFor="quick-secondary" className="field-label">{config.secondaryLabel}{isJobPost && <span> *</span>}</label><input id="quick-secondary" className="field-control mt-2" value={secondary} onChange={(e)=>setSecondary(e.target.value)} placeholder={config.secondaryPlaceholder} /></div>}
+        {isJobPost && <div className="rounded-xl border border-border bg-[#fafafa] p-4 sm:p-5"><div><p className="text-sm font-semibold">Publish-ready job details</p><p className="mt-1 text-xs text-muted-foreground">DocBeans rewrites these facts; it will not invent missing claims.</p></div><div className="mt-4 space-y-4"><div><label htmlFor="job-qualifications" className="field-label">Required skills and experience <span>*</span></label><textarea id="job-qualifications" className="field-control mt-2 min-h-24 resize-none py-3" value={jobPost.qualifications} onChange={(e)=>setJobPost(value=>({...value,qualifications:e.target.value}))} placeholder="e.g. 5+ years in consulting; practical AI delivery; strong stakeholder communication" /><p className="field-help">Separate requirements with a new line or semicolon.</p></div><div><label htmlFor="job-preferred" className="field-label">Preferred qualifications <span className="font-normal text-muted-foreground">(optional)</span></label><textarea id="job-preferred" className="field-control mt-2 min-h-20 resize-none py-3" value={jobPost.preferredQualifications} onChange={(e)=>setJobPost(value=>({...value,preferredQualifications:e.target.value}))} placeholder="e.g. Cloud certification; experience in learning design" /></div><div className="grid gap-4 md:grid-cols-2"><div><label htmlFor="job-benefits" className="field-label">Why join / benefits <span className="font-normal text-muted-foreground">(optional)</span></label><textarea id="job-benefits" className="field-control mt-2 min-h-20 resize-none py-3" value={jobPost.benefits} onChange={(e)=>setJobPost(value=>({...value,benefits:e.target.value}))} placeholder="e.g. Shape regional AI adoption; learning budget; flexible work" /></div><div><label htmlFor="job-application" className="field-label">How to apply <span className="font-normal text-muted-foreground">(required to publish)</span></label><textarea id="job-application" className="field-control mt-2 min-h-20 resize-none py-3" value={jobPost.application} onChange={(e)=>setJobPost(value=>({...value,application:e.target.value}))} placeholder="e.g. Apply with your CV at careers@example.com by 30 September" /></div></div></div></div>}
+        <div className="grid gap-5 md:grid-cols-2"><div><label htmlFor="quick-tone" className="field-label">Tone</label><div className="relative mt-2"><select id="quick-tone" className="field-control appearance-none pr-10" value={tone} onChange={(e)=>setTone(e.target.value)}>{config.tones.map(item=><option key={item}>{item}</option>)}</select><ChevronDown className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" /></div></div><div><label htmlFor="sender" className="field-label">{preparedByLabel} <span className="font-normal text-muted-foreground">({isJobPost ? 'required to publish' : 'optional'})</span></label><input id="sender" className="field-control mt-2" value={sender} onChange={(e)=>setSender(e.target.value)} placeholder={isJobPost ? 'Organisation name' : 'Your name or organisation'} /></div></div>
+        {isJobPost && <div><label htmlFor="company-url" className="field-label">Company website <span className="font-normal text-muted-foreground">(optional)</span></label><input id="company-url" type="url" className="field-control mt-2" value={jobPost.companyUrl} onChange={(e)=>setJobPost(value=>({...value,companyUrl:e.target.value}))} placeholder="https://example.com" /><p className="field-help">Shown in the preview and included in LinkedIn and job-portal copy.</p></div>}
         <div className="rounded-xl border border-border bg-[#fafafa] p-4 sm:p-5"><div className="flex items-start justify-between gap-4"><div><p className="text-sm font-semibold">Document styling</p><p className="mt-1 text-xs text-muted-foreground">Applied to the generated preview and export.</p></div><div className="flex gap-1.5" aria-hidden="true"><span className="size-3 rounded-full border" style={{backgroundColor:preset.accent}} /><span className="size-3 rounded-full border" style={{backgroundColor:preset.soft}} /><span className="size-3 rounded-full border" style={{backgroundColor:preset.surface}} /></div></div><div className="mt-4 grid gap-4 md:grid-cols-2"><div><label htmlFor="quick-font" className="field-label">Font</label><div className="relative mt-2"><select id="quick-font" className="field-control appearance-none pr-10" value={font} onChange={(e)=>setFont(e.target.value as DocumentFont)}>{Object.entries(documentFonts).map(([value,item])=><option key={value} value={value}>{item.label}</option>)}</select><ChevronDown className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" /></div></div><div><label htmlFor="quick-theme" className="field-label">Preset theme</label><div className="relative mt-2"><select id="quick-theme" className="field-control appearance-none pr-10" value={theme} onChange={(e)=>setTheme(e.target.value as DocumentTheme)}>{Object.entries(documentThemes).map(([value,item])=><option key={value} value={value}>{item.label} · {item.description}</option>)}</select><ChevronDown className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" /></div></div></div></div>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5"><p className="text-xs text-muted-foreground">Nothing is published automatically.</p><Button className="h-10 gap-2 px-5" disabled={!recipient.trim() || !details.trim()} onClick={onGenerate}><WandSparkles /> Generate {config.noun}</Button></div>
+        {generationError && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{generationError}</div>}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5"><p className="text-xs text-muted-foreground">Nothing is published automatically. Credits are charged only after a successful live generation.</p><Button className="h-10 gap-2 px-5" disabled={generatingJob || !recipient.trim() || !details.trim() || (isJobPost && (!secondary.trim() || !jobPost.qualifications.trim()))} onClick={handleGenerate}><WandSparkles /> {generatingJob ? 'Writing and checking…' : `Generate ${config.noun}`}</Button></div>
       </div>
     </section>
-    <aside className="space-y-4"><div className="rounded-[18px] border border-border bg-card p-5"><p className="text-sm font-semibold">What DocBeans needs</p><div className="mt-4 space-y-3">{config.checklist.map((item,i)=><div key={item} className="flex items-center gap-3 text-xs"><span className="grid size-6 shrink-0 place-items-center rounded-full bg-muted font-semibold">{i+1}</span>{item}</div>)}</div></div><div className="rounded-[18px] bg-primary p-5 text-primary-foreground"><p className="text-sm font-semibold">Need more control?</p><p className="mt-2 text-xs leading-5 text-white/70">Use Advanced brief only for governed templates, source grounding and formal review workflows.</p></div></aside>
+    <aside className="space-y-4"><div className="rounded-[18px] border border-border bg-card p-5"><p className="text-sm font-semibold">What DocBeans needs</p><div className="mt-4 space-y-3">{config.checklist.map((item,i)=><div key={item} className="flex items-center gap-3 text-xs"><span className="grid size-6 shrink-0 place-items-center rounded-full bg-muted font-semibold">{i+1}</span>{item}</div>)}</div></div>{followUps.length > 0 && <div className="rounded-[18px] border border-amber-200 bg-amber-50 p-5"><p className="text-sm font-semibold text-amber-950">Before you generate</p><ul className="mt-3 list-disc space-y-2 pl-4 text-xs leading-5 text-amber-900/80">{followUps.map(item=><li key={item}>{item}</li>)}</ul></div>}<div className="rounded-[18px] bg-primary p-5 text-primary-foreground"><p className="text-sm font-semibold">Quality first</p><p className="mt-2 text-xs leading-5 text-white/70">DocBeans rewrites the brief, separates requirements and flags anything that still needs human confirmation.</p></div></aside>
   </div>;
 }
 
-function QuickDraft({ type, primary, details, secondary, sender, font, theme }: { type:QuickDocumentType; primary:string; details:string; secondary:string; sender:string; font:DocumentFont; theme:DocumentTheme }) {
+function toListItems(value:string) {
+  return value
+    .split(/\r?\n|;|,(?=\s*[A-Za-z])/)
+    .map(item => item.replace(/^(?:[-•*]\s+|\d+[.)]\s+)/, '').trim())
+    .filter(Boolean);
+}
+
+function sentenceCase(value:string) {
+  const clean = value.trim().replace(/[.;,]+$/, '');
+  return clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : clean;
+}
+
+function lowerFirst(value:string) {
+  return value ? value.charAt(0).toLowerCase() + value.slice(1) : value;
+}
+
+function toResponsibility(value:string) {
+  const clean = value.trim().replace(/[.;,]+$/, '');
+  if (/^ai initiatives\b/i.test(clean)) return `Lead AI${clean.slice(2)}`;
+  if (/^come up with\b/i.test(clean)) return sentenceCase(clean.replace(/^come up with/i, 'develop'));
+  if (/^(lead|drive|identify|develop|build|deliver|define|manage|create|design|assess|advise|partner|establish|implement|support|own|translate|coordinate|monitor|evaluate)\b/i.test(clean)) return sentenceCase(clean);
+  return `Own ${lowerFirst(clean)}`;
+}
+
+function GeneratedJobPreview({ document, setDocument, editing, font, theme }: { document:GeneratedJobDocument; setDocument:React.Dispatch<React.SetStateAction<GeneratedJobDocument | null>>; editing:boolean; font:DocumentFont; theme:DocumentTheme }) {
+  const preset = documentThemes[theme];
+  const update = (changes:Partial<GeneratedJobDocument>) => setDocument(current => current ? ({
+    ...current,
+    ...changes,
+    quality: {
+      ...current.quality,
+      status: 'needs_review',
+      score: Math.min(current.quality.score, 88),
+      checks: [...current.quality.checks.filter(check=>check.label !== 'Human edits'), { label:'Human edits', status:'review', message:'Review the edited content before publishing.' }],
+    },
+  }) : current);
+  const listValue = (items:string[]) => items.join('\n');
+  const parseList = (value:string) => value.split(/\r?\n/).map(item=>item.trim()).filter(Boolean);
+  const fieldClass = 'w-full rounded-md border border-input bg-white/70 px-3 py-2 text-base leading-6 shadow-sm';
+
+  return <div className="mx-auto max-w-[720px]" style={{fontFamily:documentFonts[font].family,color:preset.text}}>
+    <p className="text-xs font-semibold uppercase tracking-[.14em]" style={{color:preset.accent}}>Job description</p>
+    {editing ? <input aria-label="Job title" className={`${fieldClass} mt-3 text-2xl`} value={document.title} onChange={e=>update({title:e.target.value})} /> : <h2 className="mt-3 text-3xl font-normal" style={{fontFamily:documentFonts[font].family,color:preset.accent}}>{document.title}</h2>}
+    <div className="mt-5 h-px" style={{backgroundColor:preset.border}} />
+    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      {editing ? <input aria-label="Working context" className={fieldClass} value={document.context} onChange={e=>update({context:e.target.value})} /> : <p className="text-sm font-medium">{document.context}</p>}
+      {editing ? <input aria-label="Organisation" className={fieldClass} value={document.organisation} onChange={e=>update({organisation:e.target.value})} /> : document.organisation && <p className="text-sm sm:text-right">{document.organisation}</p>}
+    </div>
+    {(editing || document.companyUrl) && <div className="mt-3 sm:text-right">{editing ? <input aria-label="Company website" type="url" className={fieldClass} value={document.companyUrl} onChange={e=>update({companyUrl:e.target.value})} placeholder="https://example.com" /> : <a href={document.companyUrl} target="_blank" rel="noreferrer" className="text-sm font-medium underline underline-offset-4" style={{color:preset.accent}}>{document.companyUrl}</a>}</div>}
+    <div className="mt-8 space-y-7 text-base leading-7">
+      <section><h3 className="font-semibold">About the role</h3>{editing ? <textarea aria-label="About the role" className={`${fieldClass} mt-2 min-h-28`} value={document.aboutRole} onChange={e=>update({aboutRole:e.target.value})} /> : <p className="mt-2">{document.aboutRole}</p>}</section>
+      <section><h3 className="font-semibold">Key responsibilities</h3>{editing ? <textarea aria-label="Key responsibilities" className={`${fieldClass} mt-2 min-h-44`} value={listValue(document.responsibilities)} onChange={e=>update({responsibilities:parseList(e.target.value)})} /> : <ul className="mt-2 list-disc space-y-2 pl-5">{document.responsibilities.map(item=><li key={item}>{item}</li>)}</ul>}</section>
+      <section><h3 className="font-semibold">Required skills and experience</h3>{editing ? <textarea aria-label="Required skills and experience" className={`${fieldClass} mt-2 min-h-36`} value={listValue(document.requiredQualifications)} onChange={e=>update({requiredQualifications:parseList(e.target.value)})} /> : <ul className="mt-2 list-disc space-y-2 pl-5">{document.requiredQualifications.map(item=><li key={item}>{item}</li>)}</ul>}</section>
+      {(editing || document.preferredQualifications.length > 0) && <section><h3 className="font-semibold">Preferred qualifications</h3>{editing ? <textarea aria-label="Preferred qualifications" className={`${fieldClass} mt-2 min-h-24`} value={listValue(document.preferredQualifications)} onChange={e=>update({preferredQualifications:parseList(e.target.value)})} /> : <ul className="mt-2 list-disc space-y-2 pl-5">{document.preferredQualifications.map(item=><li key={item}>{item}</li>)}</ul>}</section>}
+      {(editing || document.benefits.length > 0) && <section><h3 className="font-semibold">Why join us</h3>{editing ? <textarea aria-label="Why join us" className={`${fieldClass} mt-2 min-h-24`} value={listValue(document.benefits)} onChange={e=>update({benefits:parseList(e.target.value)})} /> : <ul className="mt-2 list-disc space-y-2 pl-5">{document.benefits.map(item=><li key={item}>{item}</li>)}</ul>}</section>}
+      <section><h3 className="font-semibold">How to apply</h3>{editing ? <textarea aria-label="How to apply" className={`${fieldClass} mt-2 min-h-24`} value={document.application} onChange={e=>update({application:e.target.value})} /> : <p className="mt-2">{document.application}</p>}</section>
+      <section className="border-t pt-5" style={{borderColor:preset.border}}>{editing ? <textarea aria-label="Inclusive hiring statement" className={`${fieldClass} min-h-20`} value={document.inclusiveStatement} onChange={e=>update({inclusiveStatement:e.target.value})} /> : <p className="text-sm">{document.inclusiveStatement}</p>}</section>
+    </div>
+  </div>;
+}
+
+function UsageCard({ usage, notice }: { usage:GenerationUsage; notice:string }) {
+  const live = usage.mode !== 'local-fallback';
+  return <section className="xl:col-span-2 rounded-[18px] border border-border bg-card px-5 py-4" aria-label="Generation usage">
+    <div className="flex flex-wrap items-center justify-between gap-4"><div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-lg bg-muted"><DollarSign className="size-4" /></span><div><p className="text-sm font-semibold">Generation usage</p><p className="mt-0.5 text-xs text-muted-foreground">{live ? `${usage.mode === 'anthropic' ? 'Anthropic' : 'OpenAI'} · ${usage.model} · ${usage.inputTokens.toLocaleString()} input · ${usage.outputTokens.toLocaleString()} output tokens` : 'Local quality rules · no AI provider call'}</p></div></div><div className="flex flex-wrap gap-7 text-right"><div><p className="text-xs text-muted-foreground">Credits consumed</p><p className="mt-1 text-sm font-semibold">{usage.credits} DocBeans credit{usage.credits === 1 ? '' : 's'}</p></div><div><p className="text-xs text-muted-foreground">Provider cost</p><p className="mt-1 text-sm font-semibold">US${usage.providerCostUsd.toFixed(6)}</p></div><div><p className="text-xs text-muted-foreground">DocBeans charge</p><p className="mt-1 text-sm font-semibold">SGD {usage.customerChargeSgd.toFixed(2)}</p></div></div></div>
+    <p className="mt-3 border-t border-border pt-3 text-[11px] leading-4 text-muted-foreground">{notice || `Actual token usage returned by the provider. Cost calculated from the configured ${usage.model} token rates; customer pricing is shown separately.`}</p>
+  </section>;
+}
+
+function GeneratedQuickPreview({ document, font, theme }: { document:GeneratedQuickDocument; font:DocumentFont; theme:DocumentTheme }) {
+  const preset=documentThemes[theme];
+  return <div className="mx-auto max-w-[680px]" style={{fontFamily:documentFonts[font].family,color:preset.text}}><p className="text-xs font-semibold uppercase tracking-[.14em]" style={{color:preset.accent}}>DocBeans document</p><h2 className="mt-3 text-3xl font-normal" style={{fontFamily:documentFonts[font].family,color:preset.accent}}>{document.title}</h2><div className="mt-5 h-px" style={{backgroundColor:preset.border}} /><div className="mt-8 whitespace-pre-wrap text-base leading-8">{document.body}</div></div>;
+}
+
+function QuickDraft({ type, primary, details, secondary, sender, font, theme, jobPost }: { type:QuickDocumentType; primary:string; details:string; secondary:string; sender:string; font:DocumentFont; theme:DocumentTheme; jobPost:JobPostDetails }) {
   const byline = sender || 'Your name';
   const preset = documentThemes[theme];
   const shell = (label:string, title:string, content:React.ReactNode) => <div className="mx-auto max-w-[680px]" style={{fontFamily:documentFonts[font].family,color:preset.text}}><p className="text-xs font-semibold uppercase tracking-[.14em]" style={{color:preset.accent}}>{label}</p><h2 className="mt-3 text-2xl font-normal" style={{fontFamily:documentFonts[font].family,color:preset.accent}}>{title}</h2><div className="mt-5 h-px" style={{backgroundColor:preset.border}} /><div className="mt-8 space-y-5 text-[15px] leading-7">{content}</div></div>;
@@ -201,7 +334,11 @@ function QuickDraft({ type, primary, details, secondary, sender, font, theme }: 
   if (type === 'proposal') return shell('Business proposal', `Proposal for ${primary}`, <><section><h3 className="font-semibold">Opportunity and proposed solution</h3><p className="mt-2 whitespace-pre-line">{details}</p></section><section><h3 className="font-semibold">Expected value</h3><p className="mt-2">The proposed approach is designed to deliver a focused, measurable outcome while keeping implementation practical and accountable.</p></section><section><h3 className="font-semibold">Commercial terms and next step</h3><p className="mt-2">{secondary || 'Confirm the scope and schedule a working session to agree delivery details.'}</p></section><p><strong>Prepared by:</strong> {byline}</p></>);
   if (type === 'project-brief') return shell('Project brief', primary, <><section><h3 className="font-semibold">Purpose and scope</h3><p className="mt-2 whitespace-pre-line">{details}</p></section><section><h3 className="font-semibold">Delivery context</h3><p className="mt-2">{secondary || 'Ownership, timeline and constraints to be confirmed during initiation.'}</p></section><section><h3 className="font-semibold">Success</h3><p className="mt-2">The project will be considered successful when agreed deliverables are completed, adopted and measured against the stated outcomes.</p></section><p><strong>Prepared by:</strong> {byline}</p></>);
   if (type === 'executive-summary') return shell('Executive summary', primary, <><section><h3 className="font-semibold">Key findings</h3><p className="mt-2 whitespace-pre-line">{details}</p></section><section className="rounded-xl bg-muted p-4"><h3 className="font-semibold">Decision or action</h3><p className="mt-2">{secondary || 'Review the findings and confirm the preferred next step.'}</p></section><p><strong>Prepared by:</strong> {byline}</p></>);
-  if (type === 'job-description') return shell('Job description', primary, <><p className="text-sm text-muted-foreground">{secondary || 'Team and employment details to be confirmed'}</p><section><h3 className="font-semibold">Role purpose</h3><p className="mt-2">This role is accountable for delivering meaningful outcomes within its area of responsibility.</p></section><section><h3 className="font-semibold">Responsibilities and requirements</h3><p className="mt-2 whitespace-pre-line">{details}</p></section><section><h3 className="font-semibold">What success looks like</h3><p className="mt-2">Clear ownership, reliable delivery, constructive collaboration and measurable impact.</p></section></>);
+  if (type === 'job-description') {
+    const responsibilities = toListItems(details).map(toResponsibility);
+    const qualifications = toListItems(jobPost.qualifications);
+    return shell('Job description', primary, <><p className="text-sm font-medium" style={{color:preset.accent}}>{secondary || 'Working arrangement to be confirmed'}</p>{sender && <p className="text-sm"><strong>{sender}</strong></p>}<section><h3 className="font-semibold">About the role</h3><p className="mt-2">As our {primary}, you will {lowerFirst(responsibilities[0] || 'lead the role’s core priorities')} while working with stakeholders to turn business needs into practical, measurable outcomes.</p></section><section><h3 className="font-semibold">Key responsibilities</h3><ul className="mt-2 list-disc space-y-2 pl-5">{responsibilities.map(item=><li key={item}>{item}</li>)}</ul></section><section><h3 className="font-semibold">Required skills and experience</h3><ul className="mt-2 list-disc space-y-2 pl-5">{qualifications.map(item=><li key={item}>{sentenceCase(item)}</li>)}</ul></section>{jobPost.benefits && <section><h3 className="font-semibold">Why join us</h3><ul className="mt-2 list-disc space-y-2 pl-5">{toListItems(jobPost.benefits).map(item=><li key={item}>{sentenceCase(item)}</li>)}</ul></section>}<section><h3 className="font-semibold">How to apply</h3><p className="mt-2">{jobPost.application || 'Apply through this job portal with your CV and a short note explaining your interest in the role.'}</p></section><p className="border-t pt-5 text-sm" style={{borderColor:preset.border}}>We welcome applicants from different backgrounds who can demonstrate the skills and outcomes required for this role.</p></>);
+  }
   if (type === 'memo') return shell('Internal memo', `Memo to ${primary}`, <><p><strong>From:</strong> {byline}</p><section><h3 className="font-semibold">Purpose</h3><p className="mt-2 whitespace-pre-line">{details}</p></section>{secondary && <section><h3 className="font-semibold">Action and timing</h3><p className="mt-2">{secondary}</p></section>}</>);
   if (type === 'announcement') return shell('Announcement', 'Important update', <><p>To {primary},</p><p className="whitespace-pre-line">{details}</p>{secondary && <p><strong>Next step:</strong> {secondary}</p>}<p>Thank you,<br />{byline}</p></>);
   if (type === 'meeting-agenda') return shell('Meeting agenda', primary, <><p><strong>Session details:</strong> {secondary || 'To be confirmed'}</p><section><h3 className="font-semibold">Purpose and desired outcomes</h3><p className="mt-2 whitespace-pre-line">{details}</p></section><section><h3 className="font-semibold">Agenda</h3><ol className="mt-2 list-decimal space-y-2 pl-5"><li>Welcome and objective</li><li>Key discussion topics</li><li>Decisions required</li><li>Actions, owners and next steps</li></ol></section></>);
@@ -213,7 +350,7 @@ function QuickDraft({ type, primary, details, secondary, sender, font, theme }: 
 }
 
 function AppSidebar() {
-  return <aside className="hidden flex-col border-r border-border bg-sidebar px-3 py-5 lg:flex"><Button className="h-10 justify-start gap-2.5 rounded-xl px-3"><Plus /> New document</Button><nav aria-label="Primary" className="mt-5 space-y-1"><a className="nav-link nav-link-active" href="/"><FileText /> Documents</a><a className="nav-link" href="#"><FolderKanban /> Workspaces</a><a className="nav-link" href="#"><LayoutTemplate /> Templates</a><a className="nav-link" href="#"><Users /> Shared with me</a><a className="nav-link" href="/about"><CircleHelp /> About DocBeans</a></nav><div className="mt-7 px-3 text-[11px] font-semibold uppercase tracking-[0.13em] text-muted-foreground">Recent</div><div className="mt-2 space-y-1"><button className="recent-item"><span className="recent-dot bg-[#686864]" />Q3 transformation brief</button><button className="recent-item"><span className="recent-dot bg-[#8e8e8a]" />Vendor assessment</button><button className="recent-item"><span className="recent-dot bg-[#adada7]" />Launch communication</button></div><div className="mt-auto rounded-xl border border-border bg-white/50 p-3"><p className="text-[11px] font-semibold text-foreground">chams.ai workspace</p><div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground"><ShieldCheck className="size-3" /> Protected knowledge</div></div><div className="mt-3 border-t border-border pt-3"><a className="nav-link" href="#"><Settings /> Settings</a></div></aside>;
+  return <aside className="hidden flex-col border-r border-border bg-sidebar px-3 py-5 lg:flex"><Button className="h-10 justify-start gap-2.5 rounded-xl px-3"><Plus /> New document</Button><nav aria-label="Primary" className="mt-5 space-y-1"><a className="nav-link nav-link-active" href="/"><FileText /> Documents</a><a className="nav-link" href="/features"><FolderKanban /> Features</a><a className="nav-link" href="/pricing"><LayoutTemplate /> Pricing</a><a className="nav-link" href="/manual"><BookOpen /> Manual</a><a className="nav-link" href="/about"><CircleHelp /> About DocBeans</a></nav><div className="mt-7 px-3 text-[11px] font-semibold uppercase tracking-[0.13em] text-muted-foreground">Recent</div><div className="mt-2 space-y-1"><button className="recent-item"><span className="recent-dot bg-[#16888b]" />Q3 transformation brief</button><button className="recent-item"><span className="recent-dot bg-[#f26b4f]" />Vendor assessment</button><button className="recent-item"><span className="recent-dot bg-[#123f55]" />Launch communication</button></div><div className="mt-auto rounded-xl border border-border bg-white/50 p-3"><p className="text-[11px] font-semibold text-foreground">chams.ai workspace</p><div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground"><ShieldCheck className="size-3" /> Protected knowledge</div></div><div className="mt-3 border-t border-border pt-3"><a className="nav-link" href="/settings"><Settings /> AI settings</a></div></aside>;
 }
 
 type BriefProps = {
