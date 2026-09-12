@@ -20,13 +20,14 @@
 - [x] T013 Create the Spec Kit constitution, product specification, implementation plan, tasks, and requirements checklist
 - [x] T014 Verify the production build and affected product-information routes
 - [x] T015 Make Features the landing page and move the document workspace to `/create`
+- [x] T016 Redesign the product page for an executive audience and add document typography, colour, header, subheader, and download controls
 
 ## Planned commercial and desktop work
 
-- [ ] T016 Define checkout, subscription lifecycle, invoices, refunds, and tax-calculation requirements
-- [ ] T017 Connect a payment provider for USD 7 monthly platform subscriptions
-- [ ] T018 Design desktop licensing for the USD 45 one-time purchase
-- [ ] T019 Package, sign, and verify the desktop installer
-- [ ] T020 Implement secure post-purchase desktop download delivery
-- [ ] T021 Define desktop updates, supported operating systems, and upgrade policy
-- [ ] T022 Add automated billing-accounting tests for managed AI and BYOK
+- [ ] T017 Define checkout, subscription lifecycle, invoices, refunds, and tax-calculation requirements
+- [ ] T018 Connect a payment provider for USD 7 monthly platform subscriptions
+- [ ] T019 Design desktop licensing for the USD 45 one-time purchase
+- [ ] T020 Package, sign, and verify the desktop installer
+- [ ] T021 Implement secure post-purchase desktop download delivery
+- [ ] T022 Define desktop updates, supported operating systems, and upgrade policy
+- [ ] T023 Add automated billing-accounting tests for managed AI and BYOK

@@ -90,6 +90,8 @@ As a prospective customer, I can understand features, pricing, usage billing, ta
 - **FR-018:** Display the USD 7 monthly web platform fee and USD 45 one-time desktop price.
 - **FR-019:** State that taxes depend on the billing country and applicable local rules.
 - **FR-020:** Keep desktop checkout and installer controls inactive and clearly labelled until delivery is implemented.
+- **FR-021:** Provide document-level controls for preset theme, font, body colour, header colour, subheader colour, header layout, and subheader treatment.
+- **FR-022:** Let users download generated documents as Word-compatible `.doc` or plain-text `.txt` files and print or save them as PDF.
 
 ## Edge Cases
 
@@ -108,6 +110,7 @@ As a prospective customer, I can understand features, pricing, usage billing, ta
 - **SC-004:** No generated draft is published automatically.
 - **SC-005:** All public product-information pages use consistent DocBeans branding, typography, navigation, and policy links.
 - **SC-006:** The production build succeeds and all implemented routes respond without a blocking runtime error.
+- **SC-007:** Styling choices remain visible in the generated preview and supported downloaded output.
 
 ## Out of Scope for Current Beta
 

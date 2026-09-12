@@ -1,69 +1,75 @@
 import Link from 'next/link';
 import {
-  ArrowRight, BookOpenCheck, BrainCircuit, Download, FileCheck2, Files,
-  KeyRound, LayoutTemplate, Palette, ReceiptText, Share2, ShieldCheck, UserRoundPen,
-  WandSparkles,
+  ArrowRight, BookOpenCheck, BrainCircuit, Check, Download, FileCheck2, Files,
+  Palette, ShieldCheck, SlidersHorizontal,
+  Type, WandSparkles,
 } from 'lucide-react';
 import { MarketingPage } from '@/components/marketing-page';
 import { buttonVariants } from '@/components/ui/button';
 
-const groups = [
+const capabilityRows = [
   {
-    label:'Create',
-    title:'Start with the document—not a blank prompt.',
-    description:'DocBeans changes the questions and structure to match what you are creating.',
-    features:[
-      [Files,'Practical document library','Create appreciation and recommendation letters, testimonials, leave requests, job descriptions, quotations, proposals, curricula, meeting records, SOPs and more.'],
-      [WandSparkles,'Quick Document','Answer only the focused questions needed for the selected document and move quickly to a usable draft.'],
-      [LayoutTemplate,'Advanced Brief','Define role, purpose, requirements, output and approved knowledge when governance and traceability matter.'],
-      [UserRoundPen,'Roles, tone and context','Choose a writing role or enter a custom one, then guide vocabulary, audience relationship and professional tone.'],
-    ],
+    number:'01',
+    label:'Create with context',
+    title:'Start from the document you need.',
+    text:'Select a practical document type and DocBeans presents only the questions, tone choices and structure relevant to that output.',
+    points:['18 focused document workflows','Quick Document and Advanced Brief','Custom roles, audience and approved knowledge'],
+    icon:Files,
   },
   {
-    label:'Control AI',
-    title:'Choose the model and who pays for it.',
-    description:'AI settings apply across the application, while every generation remains visible and accountable.',
-    features:[
-      [BrainCircuit,'Application-wide model choice','Select Anthropic or OpenAI and the preferred model once for every DocBeans workflow.'],
-      [KeyRound,'Managed AI or BYOK','Use DocBeans-managed AI or bring your own provider key. BYOK credentials remain session-only in the current browser tab.'],
-      [ReceiptText,'Transparent usage and charges','See returned token usage, estimated provider cost, credits consumed and the DocBeans generation charge after each successful request.'],
-      [ShieldCheck,'Safe fallback behavior','If no provider is configured, DocBeans can produce a local-rule draft without provider tokens or AI credits.'],
-    ],
+    number:'02',
+    label:'Apply governance',
+    title:'Keep AI choice, cost and review visible.',
+    text:'Set Anthropic or OpenAI once, choose managed AI or BYOK, and retain a clear view of provider usage, credits and human review requirements.',
+    points:['Application-wide model settings','Session-only BYOK credentials','Usage, cost and quality summaries'],
+    icon:ShieldCheck,
   },
   {
-    label:'Review and deliver',
-    title:'Turn the draft into something ready to use.',
-    description:'Presentation, quality checks and destination-aware output stay part of the same workflow.',
-    features:[
-      [FileCheck2,'Quality and publication checks','Review structure, repetition, unsupported claims, missing details and publication readiness—especially for job descriptions.'],
-      [BookOpenCheck,'Human review by design','Generated content remains a draft until a person verifies names, facts, links, dates, prices, commitments and sensitive details.'],
-      [Palette,'Professional document styling','Select a document font and preset theme independently from the consistent DocBeans interface style.'],
-      [Share2,'Export and destination-ready copy','Edit the draft, print or save it as PDF, and copy clean text for LinkedIn or job portals without automatic publishing.'],
-    ],
+    number:'03',
+    label:'Design the output',
+    title:'Control how the document looks and reads.',
+    text:'Use an executive document design panel to manage presentation independently from the consistent DocBeans interface.',
+    points:['Five professional themes and fonts','Body, header and subheader colours','Header layouts and subheader treatments'],
+    icon:SlidersHorizontal,
   },
+  {
+    number:'04',
+    label:'Deliver',
+    title:'Move from reviewed draft to a usable file.',
+    text:'Download an editable Word-compatible file or plain text, print to PDF, and copy destination-ready job content without automatic publishing.',
+    points:['Word-compatible .doc download','Plain-text download and print-to-PDF','LinkedIn and job-portal copy'],
+    icon:Download,
+  },
+] as const;
+
+const controls = [
+  [Palette,'Theme','Minimal, corporate blue, warm ivory, editorial or formal green'],
+  [Type,'Typography','Choose the document font, header layout and subheader emphasis'],
+  [SlidersHorizontal,'Colour','Set body, header and subheader font colours independently'],
+  [Download,'Output','Download Word or text, or print and save as PDF'],
 ] as const;
 
 export default function FeaturesPage() {
   return <MarketingPage
-    kicker="Product capabilities"
-    title="A focused path from intent to a reviewed document."
-    intro="DocBeans combines document-specific guidance, flexible AI access, visible quality controls and professional output—without turning a simple writing task into a complex workflow."
+    kicker="DocBeans product"
+    title="Executive document creation, with control at every stage."
+    intro="Move from intent to a professional, review-ready document in one governed workspace—without turning a straightforward task into a complicated process."
   >
-    <div className="mb-12 flex flex-wrap gap-3">
-      <Link href="/create" className={buttonVariants({className:'h-11 gap-2 px-5'})}>Create a document <ArrowRight className="size-4" /></Link>
-      <Link href="/pricing" className={buttonVariants({variant:'outline',className:'h-11 px-5'})}>View pricing</Link>
-    </div>
-    <div className="space-y-12">
-      {groups.map(group=><section key={group.label}>
-        <div className="grid gap-4 lg:grid-cols-[.75fr_1.25fr] lg:gap-10">
-          <div><p className="marketing-kicker">{group.label}</p><h2 className="mt-3 text-3xl leading-tight tracking-[-.035em]">{group.title}</h2><p className="mt-4 text-base leading-7 text-muted-foreground">{group.description}</p></div>
-          <div className="grid gap-4 sm:grid-cols-2">{group.features.map(([Icon,title,text])=><article className="marketing-card" key={title}><span className="grid size-11 place-items-center rounded-xl bg-secondary text-primary"><Icon className="size-5" /></span><h3 className="mt-5 text-lg font-semibold tracking-[-.02em]">{title}</h3><p className="mt-3 text-sm leading-6 text-muted-foreground">{text}</p></article>)}</div>
-        </div>
-      </section>)}
-    </div>
-    <section className="mt-12 grid gap-5 rounded-2xl bg-primary p-6 text-primary-foreground sm:p-8 md:grid-cols-[1fr_auto] md:items-center">
-      <div><div className="flex items-center gap-3"><Download className="size-5 text-[#7bd0cf]" /><h2 className="text-xl">Web today. Desktop next.</h2></div><p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">DocBeans is currently available through the web platform. The USD 45 one-time desktop edition is planned; checkout and installer delivery are not yet connected.</p></div>
-      <span className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white/80">Desktop coming soon</span>
+    <section className="overflow-hidden rounded-[24px] bg-primary text-primary-foreground shadow-[0_24px_70px_rgba(18,63,85,.22)]">
+      <div className="grid lg:grid-cols-[1.2fr_.8fr]">
+        <div className="px-7 py-9 sm:px-10 sm:py-12"><p className="text-sm font-semibold uppercase tracking-[.16em] text-[#7bd0cf]">One document workspace</p><h2 className="mt-4 max-w-2xl text-3xl leading-tight tracking-[-.04em] sm:text-4xl">Create. Govern. Design. Deliver.</h2><p className="mt-5 max-w-xl text-base leading-7 text-white/72">DocBeans combines document-specific guidance, AI governance, executive presentation controls and practical file delivery.</p><div className="mt-8 flex flex-wrap gap-3"><Link href="/create" className={buttonVariants({className:'h-11 gap-2 bg-white px-5 text-primary hover:bg-white/90'})}>Create a document <ArrowRight className="size-4" /></Link><Link href="/pricing" className={buttonVariants({variant:'outline',className:'h-11 border-white/30 bg-transparent px-5 text-white hover:bg-white/10 hover:text-white'})}>View pricing</Link></div></div>
+        <div className="grid grid-cols-2 border-t border-white/15 lg:border-l lg:border-t-0">{[['18','Document workflows'],['5','Preset themes'],['2','AI providers'],['3','Download routes']].map(([value,label])=><div key={label} className="flex min-h-32 flex-col justify-end border-b border-r border-white/15 p-6 last:border-b-0"><strong className="text-3xl tracking-[-.04em]">{value}</strong><span className="mt-2 text-sm text-white/60">{label}</span></div>)}</div>
+      </div>
     </section>
+
+    <section className="mt-16"><div className="flex flex-wrap items-end justify-between gap-5 border-b border-border pb-6"><div><p className="marketing-kicker">Operating model</p><h2 className="mt-3 text-3xl tracking-[-.035em]">A clear path from brief to final file.</h2></div><p className="max-w-md text-sm leading-6 text-muted-foreground">Each stage answers an executive question: what are we creating, how is it governed, how should it appear, and how will it be used?</p></div>
+      <div>{capabilityRows.map(({number,label,title,text,points,icon:Icon})=><article key={number} className="grid gap-6 border-b border-border py-9 md:grid-cols-[70px_1fr_1.05fr] md:gap-9"><div className="flex items-center gap-3 md:block"><span className="text-sm font-semibold text-[#16888b]">{number}</span><span className="ml-auto grid size-10 place-items-center rounded-xl bg-secondary text-primary md:ml-0 md:mt-5"><Icon className="size-5" /></span></div><div><p className="text-sm font-semibold uppercase tracking-[.12em] text-muted-foreground">{label}</p><h3 className="mt-3 text-2xl leading-tight tracking-[-.03em]">{title}</h3><p className="mt-4 text-base leading-7 text-muted-foreground">{text}</p></div><ul className="grid content-center gap-3">{points.map(point=><li key={point} className="flex items-start gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm"><span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-secondary text-primary"><Check className="size-3" /></span>{point}</li>)}</ul></article>)}</div>
+    </section>
+
+    <section className="mt-16 rounded-[22px] border border-border bg-card p-7 shadow-[0_18px_55px_rgba(18,63,85,.08)] sm:p-9"><div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr]"><div><p className="marketing-kicker">Document design system</p><h2 className="mt-3 text-3xl leading-tight tracking-[-.035em]">Presentation controls belong inside the workflow.</h2><p className="mt-4 text-base leading-7 text-muted-foreground">Choose a coordinated preset, then adjust the details required for your brand, audience or destination.</p><Link href="/create" className={buttonVariants({variant:'outline',className:'mt-6 gap-2'})}>Open document workspace <ArrowRight className="size-4" /></Link></div><div className="grid gap-4 sm:grid-cols-2">{controls.map(([Icon,title,text])=><div key={title} className="rounded-2xl bg-muted/65 p-5"><Icon className="size-5 text-primary" /><h3 className="mt-4 text-base font-semibold">{title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div></div></section>
+
+    <section className="mt-10 grid gap-4 md:grid-cols-3"><article className="marketing-card"><BrainCircuit className="size-5 text-primary" /><h3 className="mt-4 text-lg font-semibold">AI choice</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Use Anthropic or OpenAI with DocBeans-managed access or your own key.</p></article><article className="marketing-card"><FileCheck2 className="size-5 text-primary" /><h3 className="mt-4 text-lg font-semibold">Review controls</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Check structure, completeness, unsupported claims and publication readiness.</p></article><article className="marketing-card"><BookOpenCheck className="size-5 text-primary" /><h3 className="mt-4 text-lg font-semibold">Human accountability</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Every output remains a draft until names, facts, commitments and sensitive details are verified.</p></article></section>
+
+    <section className="mt-12 flex flex-col items-start justify-between gap-5 rounded-2xl bg-[#172d38] p-7 text-white sm:flex-row sm:items-center sm:p-8"><div><div className="flex items-center gap-3"><WandSparkles className="size-5 text-[#7bd0cf]" /><h2 className="text-xl">Create the document you need.</h2></div><p className="mt-2 text-sm leading-6 text-white/65">Start with a focused brief, then shape the presentation and download the reviewed result.</p></div><Link href="/create" className={buttonVariants({className:'h-11 shrink-0 gap-2 bg-white px-5 text-primary hover:bg-white/90'})}>Start creating <ArrowRight className="size-4" /></Link></section>
   </MarketingPage>;
 }

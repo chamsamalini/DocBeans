@@ -30,4 +30,8 @@
 @layer components {
   .marketing-kicker { @apply font-brand text-xs font-semibold uppercase tracking-[.16em] text-[#16888b]; }
   .marketing-card { @apply rounded-2xl border border-border bg-card p-6 shadow-[0_14px_38px_rgba(18,63,85,.08)]; }
+  .document-preview h3 { color:var(--doc-subheading); }
+  .document-preview[data-subheader-style='compact'] h3 { @apply text-sm uppercase tracking-[.08em]; }
+  .document-preview[data-subheader-style='balanced'] h3 { @apply text-base tracking-[-.01em]; }
+  .document-preview[data-subheader-style='prominent'] h3 { @apply text-xl tracking-[-.025em]; }
 }
