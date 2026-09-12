@@ -44,10 +44,10 @@ function fallback(payload:Record<string,unknown>) {
   const primary=clean(payload.primary,500), details=clean(payload.details), secondary=clean(payload.secondary,1000), sender=clean(payload.sender,300);
   return { title:primary || 'Untitled document', body:[details,secondary,sender && `From: ${sender}`].filter(Boolean).join('\n\n') };
 }
-function usage(mode:GenerationUsage['mode'], model:string, raw:Record<string,unknown>, rates:{input:number;output:number}):GenerationUsage {
+function usage(mode:GenerationUsage['mode'], model:string, raw:Record<string,unknown>, rates:{input:number;output:number}, isByok=false):GenerationUsage {
   const value=(raw.usage||{}) as {input_tokens?:number;output_tokens?:number;cache_read_input_tokens?:number;input_tokens_details?:{cached_tokens?:number}};
   const inputTokens=value.input_tokens||0, outputTokens=value.output_tokens||0, cachedInputTokens=value.cache_read_input_tokens||value.input_tokens_details?.cached_tokens||0;
-  return { mode, model, responseId:typeof raw.id==='string'?raw.id:null, inputTokens, outputTokens, cachedInputTokens, totalTokens:inputTokens+outputTokens+cachedInputTokens, providerCostUsd:(inputTokens*rates.input+outputTokens*rates.output)/1_000_000, credits:mode==='local-fallback'?0:1, customerChargeSgd:mode==='local-fallback'?0:DOCBEANS_PRICE_SGD };
+  return { mode, billingMode:mode==='local-fallback'?'none':isByok?'byok':'managed', model, responseId:typeof raw.id==='string'?raw.id:null, inputTokens, outputTokens, cachedInputTokens, totalTokens:inputTokens+outputTokens+cachedInputTokens, providerCostUsd:(inputTokens*rates.input+outputTokens*rates.output)/1_000_000, credits:mode==='local-fallback'||isByok?0:1, customerChargeSgd:mode==='local-fallback'||isByok?0:DOCBEANS_PRICE_SGD };
 }
 
 export async function POST(request:Request) {
@@ -55,6 +55,7 @@ export async function POST(request:Request) {
   const payload=await request.json().catch(()=>null) as Record<string,unknown>|null;
   if (!payload || !documentTypes.has(clean(payload.documentType,80)) || !clean(payload.primary) || !clean(payload.details)) return Response.json({error:'Document type and required details are missing.'},{status:400,headers:{'X-Request-ID':requestId}});
   const {provider,model,rates}=select(payload);
+  const isByok=request.headers.get('X-DocBeans-Billing-Mode')==='byok' && Boolean(request.headers.get('X-Provider-API-Key')?.trim());
   const key=keyFor(provider,request);
   if (!key) {
     const result:QuickGenerationResponse={document:fallback(payload),usage:usage('local-fallback','Local document rules',{},rates),notice:`${provider==='anthropic'?'Anthropic':'OpenAI'} is not configured. Add a BYOK key in AI settings or configure a managed key.`};
@@ -72,7 +73,7 @@ export async function POST(request:Request) {
   const text=outputText(raw,provider);
   try {
     const document=JSON.parse(text) as {title:string;body:string};
-    const result:QuickGenerationResponse={document,usage:usage(provider,typeof raw.model==='string'?raw.model:model,raw,rates)};
+    const result:QuickGenerationResponse={document,usage:usage(provider,typeof raw.model==='string'?raw.model:model,raw,rates,isByok),notice:isByok?'BYOK generation: your AI provider bills this model usage directly. No DocBeans AI credit was consumed.':undefined};
     return Response.json(result,{headers:{'X-Request-ID':requestId}});
   } catch {
     console.error(JSON.stringify({service:'docbeans-generation',event:'generation_failed',requestId,mode:provider,model,stopReason:raw.stop_reason||raw.status,outputCharacters:text.length,reason:'invalid_provider_json'}));

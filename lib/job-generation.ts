@@ -40,6 +40,7 @@ export type GeneratedJobDocument = {
 
 export type GenerationUsage = {
   mode: 'anthropic' | 'openai' | 'local-fallback';
+  billingMode: 'managed' | 'byok' | 'none';
   model: string;
   responseId: string | null;
   inputTokens: number;

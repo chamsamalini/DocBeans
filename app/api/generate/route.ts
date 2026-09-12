@@ -281,11 +281,12 @@ export async function POST(request:Request) {
   }
 
   const { provider, model, rates } = providerSelection(payload);
+  const isByok = request.headers.get('X-DocBeans-Billing-Mode') === 'byok' && Boolean(request.headers.get('X-Provider-API-Key')?.trim());
   const key = apiKey(provider, request);
   if (!key) {
     const result:JobGenerationResponse = {
       document: localDraft(input),
-      usage: { mode: 'local-fallback', model: 'Local quality rules', responseId: null, inputTokens: 0, cachedInputTokens: 0, outputTokens: 0, totalTokens: 0, providerCostUsd: 0, credits: 0, customerChargeSgd: 0 },
+      usage: { mode: 'local-fallback', billingMode:'none', model: 'Local quality rules', responseId: null, inputTokens: 0, cachedInputTokens: 0, outputTokens: 0, totalTokens: 0, providerCostUsd: 0, credits: 0, customerChargeSgd: 0 },
       notice: `${provider === 'anthropic' ? 'Anthropic' : 'OpenAI'} is not configured. Add your own API key or configure a server key. This draft uses local quality rules and consumes no provider tokens or DocBeans credits.`,
     };
     logGeneration('info', { event:'generation_completed', requestId, status:200, durationMs:Date.now() - startedAt, mode:result.usage.mode, qualityStatus:result.document.quality.status, qualityScore:result.document.quality.score, responsibilityCount:result.document.responsibilities.length, totalTokens:0, credits:0 });
@@ -347,10 +348,11 @@ export async function POST(request:Request) {
   const result:JobGenerationResponse = {
     document,
     usage: {
-      mode: provider, model: typeof raw.model === 'string' ? raw.model : model, responseId: typeof raw.id === 'string' ? raw.id : null,
+      mode: provider, billingMode:isByok?'byok':'managed', model: typeof raw.model === 'string' ? raw.model : model, responseId: typeof raw.id === 'string' ? raw.id : null,
       inputTokens, cachedInputTokens, outputTokens, totalTokens: inputTokens + cachedInputTokens + outputTokens,
-      providerCostUsd, credits: 1, customerChargeSgd: DOCBEANS_PRICE_SGD,
+      providerCostUsd, credits:isByok?0:1, customerChargeSgd:isByok?0:DOCBEANS_PRICE_SGD,
     },
+    notice:isByok?'BYOK generation: your AI provider bills this model usage directly. No DocBeans AI credit was consumed.':undefined,
   };
   logGeneration('info', { event:'generation_completed', requestId, status:200, durationMs:Date.now() - startedAt, mode:result.usage.mode, model:result.usage.model, qualityStatus:document.quality.status, qualityScore:document.quality.score, responsibilityCount:document.responsibilities.length, totalTokens:result.usage.totalTokens, credits:result.usage.credits });
   return Response.json(result, { headers:{'X-Request-ID':requestId} });
