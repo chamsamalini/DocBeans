@@ -36,8 +36,8 @@ const capabilityRows = [
     number:'04',
     label:'Deliver',
     title:'Move from reviewed draft to a usable file.',
-    text:'Download an editable Word-compatible file or plain text, print to PDF, and copy destination-ready job content without automatic publishing.',
-    points:['Word-compatible .doc download','Plain-text download and print-to-PDF','LinkedIn and job-portal copy'],
+    text:'Generate genuine PDF, DOCX, PPTX, TXT and XLSX files, then copy destination-ready job content without automatic publishing.',
+    points:['PDF and editable DOCX output','Presentation-ready PPTX and structured XLSX','Plain text, LinkedIn and job-portal copy'],
     icon:Download,
   },
 ] as const;
@@ -46,7 +46,7 @@ const controls = [
   [Palette,'Theme','Minimal, corporate blue, warm ivory, editorial or formal green'],
   [Type,'Typography','Choose the document font, header layout and subheader emphasis'],
   [SlidersHorizontal,'Colour','Set body, header and subheader font colours independently'],
-  [Download,'Output','Download Word or text, or print and save as PDF'],
+  [Download,'Output','Generate PDF, DOCX, PPTX, TXT or XLSX files'],
 ] as const;
 
 export default function FeaturesPage() {
@@ -58,7 +58,7 @@ export default function FeaturesPage() {
     <section className="overflow-hidden rounded-[24px] bg-primary text-primary-foreground shadow-[0_24px_70px_rgba(18,63,85,.22)]">
       <div className="grid lg:grid-cols-[1.2fr_.8fr]">
         <div className="px-7 py-9 sm:px-10 sm:py-12"><p className="text-sm font-semibold uppercase tracking-[.16em] text-[#7bd0cf]">One document workspace</p><h2 className="mt-4 max-w-2xl text-3xl leading-tight tracking-[-.04em] sm:text-4xl">Create. Govern. Design. Deliver.</h2><p className="mt-5 max-w-xl text-base leading-7 text-white/72">DocBeans combines document-specific guidance, AI governance, executive presentation controls and practical file delivery.</p><div className="mt-8 flex flex-wrap gap-3"><Link href="/create" className={buttonVariants({className:'h-11 gap-2 bg-white px-5 text-primary hover:bg-white/90'})}>Create a document <ArrowRight className="size-4" /></Link><Link href="/pricing" className={buttonVariants({variant:'outline',className:'h-11 border-white/30 bg-transparent px-5 text-white hover:bg-white/10 hover:text-white'})}>View pricing</Link></div></div>
-        <div className="grid grid-cols-2 border-t border-white/15 lg:border-l lg:border-t-0">{[['18','Document workflows'],['5','Preset themes'],['2','AI providers'],['3','Download routes']].map(([value,label])=><div key={label} className="flex min-h-32 flex-col justify-end border-b border-r border-white/15 p-6 last:border-b-0"><strong className="text-3xl tracking-[-.04em]">{value}</strong><span className="mt-2 text-sm text-white/60">{label}</span></div>)}</div>
+        <div className="grid grid-cols-2 border-t border-white/15 lg:border-l lg:border-t-0">{[['18','Document workflows'],['5','Preset themes'],['2','AI providers'],['5','Download formats']].map(([value,label])=><div key={label} className="flex min-h-32 flex-col justify-end border-b border-r border-white/15 p-6 last:border-b-0"><strong className="text-3xl tracking-[-.04em]">{value}</strong><span className="mt-2 text-sm text-white/60">{label}</span></div>)}</div>
       </div>
     </section>
 

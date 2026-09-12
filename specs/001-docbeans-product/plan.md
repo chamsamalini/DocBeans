@@ -63,7 +63,7 @@ specs/001-docbeans-product/
 5. Treat the desktop edition as planned until a signed installer, update channel, checkout, licensing, and download delivery exist.
 6. Use Montserrat for the interface; user-selected fonts apply only to generated documents.
 7. Present product capabilities in an executive operating-model layout and keep detailed presentation controls inside the document workflow.
-8. Offer Word-compatible, plain-text, and print-to-PDF delivery without automatic publishing.
+8. Generate genuine PDF, DOCX, PPTX, TXT, and XLSX files in the browser without automatic publishing.
 
 ## Delivery
 

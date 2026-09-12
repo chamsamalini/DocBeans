@@ -91,7 +91,7 @@ As a prospective customer, I can understand features, pricing, usage billing, ta
 - **FR-019:** State that taxes depend on the billing country and applicable local rules.
 - **FR-020:** Keep desktop checkout and installer controls inactive and clearly labelled until delivery is implemented.
 - **FR-021:** Provide document-level controls for preset theme, font, body colour, header colour, subheader colour, header layout, and subheader treatment.
-- **FR-022:** Let users download generated documents as Word-compatible `.doc` or plain-text `.txt` files and print or save them as PDF.
+- **FR-022:** Let users generate genuine PDF, DOCX, PPTX, TXT, and XLSX files from the reviewed document.
 
 ## Edge Cases
 

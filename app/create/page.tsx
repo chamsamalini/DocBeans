@@ -23,6 +23,7 @@ type DocumentTheme = 'minimal' | 'corporate' | 'warm' | 'editorial' | 'formal';
 type DocumentHeaderStyle = 'executive' | 'classic' | 'minimal';
 type DocumentSubheaderStyle = 'compact' | 'balanced' | 'prominent';
 type DocumentColours = { body:string; heading:string; subheading:string };
+type ExportFormat = 'pdf' | 'docx' | 'pptx' | 'txt' | 'xlsx';
 type JobPostDetails = { qualifications: string; preferredQualifications: string; benefits: string; application: string; companyUrl: string };
 type QuickDocumentConfig = {
   label: string; noun: string; heading: string; description: string;
@@ -188,26 +189,98 @@ function QuickDocumentScreen({ documentType, onTypeChange, recipient, setRecipie
   const [usage, setUsage] = useState<GenerationUsage | null>(null);
   const [notice, setNotice] = useState('');
   const [generationError, setGenerationError] = useState('');
+  const [exportError, setExportError] = useState('');
+  const [exporting, setExporting] = useState<ExportFormat | null>(null);
   const [generatingJob, setGeneratingJob] = useState(false);
   const [editingJob, setEditingJob] = useState(false);
   const previewRef = useRef<HTMLElement | null>(null);
   const isJobPost = documentType === 'job-description';
 
-  const downloadDocument = (format:'word'|'text') => {
-    if (!previewRef.current) return;
-    const fileName = `${config.label.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'docbeans-document'}`;
-    const content = format === 'text'
-      ? previewRef.current.innerText
-      : `<!doctype html><html><head><meta charset="utf-8"><title>${config.label}</title><style>body{max-width:760px;margin:48px auto;padding:0 40px;font-family:${documentFonts[font].family};color:${colours.body};line-height:1.65}h1,h2{color:${colours.heading}}h3{color:${colours.subheading}}ul,ol{padding-left:24px}</style></head><body>${previewRef.current.innerHTML}</body></html>`;
-    const blob = new Blob([content], { type:format === 'text' ? 'text/plain;charset=utf-8' : 'application/msword;charset=utf-8' });
+  const downloadBlob = (blob:Blob, fileName:string) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${fileName}.${format === 'text' ? 'txt' : 'doc'}`;
+    link.download = fileName;
     document.body.appendChild(link);
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const downloadDocument = async (format:ExportFormat) => {
+    if (!previewRef.current) return;
+    const baseName = config.label.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'docbeans-document';
+    const text = previewRef.current.innerText.trim();
+    const lines = text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
+    setExporting(format);
+    setExportError('');
+    try {
+      if (format === 'txt') {
+        downloadBlob(new Blob([text], { type:'text/plain;charset=utf-8' }), `${baseName}.txt`);
+      } else if (format === 'pdf') {
+        const { jsPDF } = await import('jspdf');
+        const pdf = new jsPDF({ unit:'pt', format:'a4' });
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 54;
+        pdf.setFont('helvetica','bold');
+        pdf.setFontSize(20);
+        pdf.setTextColor(colours.heading);
+        pdf.text(config.label, margin, 68);
+        pdf.setDrawColor(colours.heading);
+        pdf.line(margin, 82, pageWidth - margin, 82);
+        pdf.setFont('helvetica','normal');
+        pdf.setFontSize(11);
+        pdf.setTextColor(colours.body);
+        const wrapped = pdf.splitTextToSize(text, pageWidth - margin * 2) as string[];
+        let y = 108;
+        for (const line of wrapped) {
+          if (y > pageHeight - margin) { pdf.addPage(); y = margin; }
+          pdf.text(line, margin, y);
+          y += 16;
+        }
+        pdf.save(`${baseName}.pdf`);
+      } else if (format === 'docx') {
+        const { Document, HeadingLevel, Packer, Paragraph, TextRun } = await import('docx');
+        const children = [new Paragraph({ text:config.label, heading:HeadingLevel.TITLE }), ...lines.map((line,index)=>new Paragraph({ children:[new TextRun({ text:line, bold:index === 0 })], spacing:{ after:160 } }))];
+        const file = new Document({ sections:[{ properties:{}, children }] });
+        downloadBlob(await Packer.toBlob(file), `${baseName}.docx`);
+      } else if (format === 'pptx') {
+        const PptxGenJS = (await import('pptxgenjs')).default;
+        const deck = new PptxGenJS();
+        deck.layout = 'LAYOUT_WIDE';
+        deck.author = 'DocBeans';
+        deck.subject = config.label;
+        deck.title = config.label;
+        deck.company = 'DocBeans';
+        const titleSlide = deck.addSlide();
+        titleSlide.background = { color:preset.surface.replace('#','') };
+        titleSlide.addShape(deck.ShapeType.rect,{x:0,y:0,w:0.18,h:7.5,fill:{color:colours.heading.replace('#','')},line:{color:colours.heading.replace('#','')}});
+        titleSlide.addText(config.label,{x:0.8,y:2.25,w:10.8,h:1,fontFace:'Arial',fontSize:28,bold:true,color:colours.heading.replace('#',''),margin:0});
+        titleSlide.addText('Generated with DocBeans',{x:0.82,y:3.35,w:5,h:0.35,fontFace:'Arial',fontSize:11,color:colours.subheading.replace('#',''),margin:0});
+        const contentLines = lines.slice(1);
+        for (let i=0;i<contentLines.length;i+=8) {
+          const slide = deck.addSlide();
+          slide.background = { color:preset.surface.replace('#','') };
+          slide.addText(config.label,{x:0.65,y:0.42,w:11.8,h:0.4,fontFace:'Arial',fontSize:18,bold:true,color:colours.heading.replace('#',''),margin:0});
+          slide.addShape(deck.ShapeType.line,{x:0.65,y:0.95,w:12,h:0,line:{color:preset.border.replace('#',''),width:1}});
+          slide.addText(contentLines.slice(i,i+8).map(value=>({text:value,options:{bullet:{indent:18},breakLine:true}})),{x:0.8,y:1.25,w:11.7,h:5.65,fontFace:'Arial',fontSize:17,color:colours.body.replace('#',''),breakLine:true,margin:0.08,paraSpaceAfterPt:12,valign:'top'});
+        }
+        await deck.writeFile({ fileName:`${baseName}.pptx` });
+      } else {
+        const XLSX = await import('xlsx');
+        const workbook = XLSX.utils.book_new();
+        const rows = [[config.label],[`Generated with DocBeans`],[],['Order','Document content'],...lines.map((line,index)=>[index+1,line])];
+        const worksheet = XLSX.utils.aoa_to_sheet(rows);
+        worksheet['!cols'] = [{wch:10},{wch:100}];
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Document');
+        XLSX.writeFile(workbook, `${baseName}.xlsx`, { compression:true });
+      }
+    } catch (error) {
+      setExportError(error instanceof Error ? `Could not create the ${format.toUpperCase()} file: ${error.message}` : `Could not create the ${format.toUpperCase()} file.`);
+    } finally {
+      setExporting(null);
+    }
   };
 
   const copyJobPost = async (target:'linkedin'|'portal') => {
@@ -248,7 +321,7 @@ function QuickDocumentScreen({ documentType, onTypeChange, recipient, setRecipie
     </article>
     <aside className="space-y-4">
       <div className="rounded-[18px] border border-border bg-card p-5"><div className="flex items-center gap-2 text-sm font-semibold"><CheckCircle2 className="size-4" /> {jobResult?.quality.status === 'needs_review' ? 'Needs your review' : 'Draft ready'}</div><dl className="mt-4 space-y-3 text-xs"><div><dt className="text-muted-foreground">Document</dt><dd className="mt-1 font-medium">{config.label}</dd></div><div><dt className="text-muted-foreground">Style</dt><dd className="mt-1 font-medium">{documentFonts[font].label.split(' · ')[0]} · {preset.label}</dd></div><div><dt className="text-muted-foreground">Tone</dt><dd className="mt-1 font-medium">{tone}</dd></div>{jobResult && <div><dt className="text-muted-foreground">Quality score</dt><dd className="mt-1 font-medium">{jobResult.quality.score}/100</dd></div>}</dl><div className="mt-5 grid gap-2"><Button variant="outline" className="w-full" onClick={onEdit}>Edit brief</Button>{jobResult && <Button variant="outline" className="w-full" onClick={() => setEditingJob(value=>!value)}>{editingJob ? 'Finish editing' : 'Edit generated content'}</Button>}</div></div>
-      <div className="rounded-[18px] border border-border bg-card p-5"><p className="text-sm font-semibold">Download document</p><p className="mt-2 text-xs leading-5 text-muted-foreground">Choose an editable file, clean text or a print-ready PDF.</p><div className="mt-4 grid gap-2"><Button className="w-full justify-start" onClick={() => downloadDocument('word')}><Download /> Download Word (.doc)</Button><Button variant="outline" className="w-full justify-start" onClick={() => downloadDocument('text')}><FileText /> Download text (.txt)</Button><Button variant="outline" className="w-full justify-start" onClick={() => window.print()}><Download /> Print / Save PDF</Button></div></div>
+      <div className="rounded-[18px] border border-border bg-card p-5"><p className="text-sm font-semibold">Download document</p><p className="mt-2 text-xs leading-5 text-muted-foreground">Create a genuine file in the format needed for editing, presenting or analysis.</p><div className="mt-4 grid grid-cols-2 gap-2">{([['pdf','PDF'],['docx','DOCX'],['pptx','PPTX'],['txt','TXT'],['xlsx','XLSX']] as const).map(([format,label])=><Button key={format} variant={format === 'pdf' ? 'default' : 'outline'} className={`justify-start ${format === 'xlsx' ? 'col-span-2' : ''}`} disabled={exporting !== null} onClick={() => downloadDocument(format)}><Download /> {exporting === format ? 'Creating…' : label}</Button>)}</div><button type="button" className="mt-3 w-full text-center text-xs font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground" onClick={() => window.print()}>Print instead</button>{exportError && <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs leading-5 text-red-800">{exportError}</p>}</div>
       {jobResult && <div className="rounded-[18px] border border-border bg-card p-5"><p className="text-sm font-semibold">Quality checks</p><div className="mt-3 space-y-3">{jobResult.quality.checks.map(check=><div key={check.label} className="flex gap-2.5 text-xs"><span className={`mt-0.5 size-2 shrink-0 rounded-full ${check.status === 'pass' ? 'bg-emerald-500' : 'bg-amber-400'}`} /><div><p className="font-medium">{check.label}</p><p className="mt-0.5 leading-4 text-muted-foreground">{check.message}</p></div></div>)}</div>{jobResult.quality.missingInformation.length > 0 && <div className="mt-4 rounded-lg bg-amber-50 p-3"><p className="text-xs font-semibold text-amber-900">Complete before publishing</p><ul className="mt-2 list-disc space-y-1 pl-4 text-[11px] text-amber-900/80">{jobResult.quality.missingInformation.map(item=><li key={item}>{item}</li>)}</ul></div>}</div>}
       {isJobPost && jobResult && <div className="rounded-[18px] border border-border bg-card p-5"><p className="text-sm font-semibold">{jobResult.quality.status === 'ready' ? 'Ready to publish' : 'Copy after review'}</p><p className="mt-2 text-xs leading-5 text-muted-foreground">Copy clean, plain text formatted for the destination.</p>{jobResult.quality.status === 'needs_review' && <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-[11px] leading-4 text-amber-900">This draft has review items. Copying does not mark it approved.</p>}<div className="mt-4 space-y-2"><Button className="w-full justify-start" onClick={() => copyJobPost('linkedin')}><Copy /> {copied === 'linkedin' ? 'Copied for LinkedIn' : 'Copy for LinkedIn'}</Button><Button variant="outline" className="w-full justify-start" onClick={() => copyJobPost('portal')}><Copy /> {copied === 'portal' ? 'Copied for job portal' : 'Copy for job portal'}</Button></div></div>}
     </aside>

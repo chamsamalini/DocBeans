@@ -21,13 +21,14 @@
 - [x] T014 Verify the production build and affected product-information routes
 - [x] T015 Make Features the landing page and move the document workspace to `/create`
 - [x] T016 Redesign the product page for an executive audience and add document typography, colour, header, subheader, and download controls
+- [x] T017 Generate PDF, DOCX, PPTX, TXT, and XLSX files from reviewed documents
 
 ## Planned commercial and desktop work
 
-- [ ] T017 Define checkout, subscription lifecycle, invoices, refunds, and tax-calculation requirements
-- [ ] T018 Connect a payment provider for USD 7 monthly platform subscriptions
-- [ ] T019 Design desktop licensing for the USD 45 one-time purchase
-- [ ] T020 Package, sign, and verify the desktop installer
-- [ ] T021 Implement secure post-purchase desktop download delivery
-- [ ] T022 Define desktop updates, supported operating systems, and upgrade policy
-- [ ] T023 Add automated billing-accounting tests for managed AI and BYOK
+- [ ] T018 Define checkout, subscription lifecycle, invoices, refunds, and tax-calculation requirements
+- [ ] T019 Connect a payment provider for USD 7 monthly platform subscriptions
+- [ ] T020 Design desktop licensing for the USD 45 one-time purchase
+- [ ] T021 Package, sign, and verify the desktop installer
+- [ ] T022 Implement secure post-purchase desktop download delivery
+- [ ] T023 Define desktop updates, supported operating systems, and upgrade policy
+- [ ] T024 Add automated billing-accounting tests for managed AI and BYOK
