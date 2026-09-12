@@ -130,6 +130,7 @@ As the product owner, I can replace the authentication provider without changing
 - **FR-031:** Define provider-neutral browser and server authentication contracts for identity, sessions, social/email sign-in, password recovery, TOTP MFA, and assurance level.
 - **FR-032:** Keep framework API routes thin and delegate generation, validation, provider calls, and usage calculation to the backend service.
 - **FR-033:** Present each page with its primary heading directly, without a redundant uppercase descriptor above the page title.
+- **FR-034:** Use black primary body text throughout the light interface and apply the DocBeans logo orange to primary, outline, secondary, and link-style action buttons with accessible label contrast.
 
 ## Edge Cases
 

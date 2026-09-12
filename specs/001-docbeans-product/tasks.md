@@ -33,6 +33,7 @@
 - [x] T026 Document the single-Worker deployment topology, runtime configuration, and Auth0 replacement procedure
 - [x] T027 Add authentication provider selection to the environment contract
 - [x] T028 Remove redundant uppercase page descriptors while preserving useful in-page section labels
+- [x] T039 Apply black body text and the DocBeans logo orange to the shared button system
 
 ## Planned commercial and desktop work
 
