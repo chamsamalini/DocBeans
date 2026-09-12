@@ -82,6 +82,19 @@ As a user, I sign in before creating documents and can review billing, usage, an
 4. The admin portal distinguishes active services from billing or access controls that still require configuration.
 5. Policy navigation appears only in the footer and covers PDPA, GDPR, and data protection.
 
+### User Story 7 — Replace infrastructure without rewriting the product (Priority: P1)
+
+As the product owner, I can replace the authentication provider without changing document screens, generation logic, or public pages.
+
+**Independent test:** Search frontend and backend service code for Supabase SDK imports and verify that every provider-specific import is contained inside `services/auth/adapters/supabase`.
+
+**Acceptance scenarios**
+
+1. Frontend account components call only the browser authentication contract.
+2. Protected pages and backend generation services call only the server authentication facade.
+3. API route files contain delivery wiring while generation and validation logic remains in the backend service.
+4. Adding Auth0 requires a new authentication adapter and factory registration, without changing frontend or generation-service imports.
+
 ## Functional Requirements
 
 - **FR-001:** Support the implemented Quick Document catalogue: appreciation, thank-you, recommendation, testimonial, cover letter, job description, quotation, proposal, project brief, executive summary, curriculum, SOP, memo, announcement, meeting agenda, meeting minutes, leave request, and medical leave request.
@@ -112,6 +125,10 @@ As a user, I sign in before creating documents and can review billing, usage, an
 - **FR-026:** Provide a protected user portal with billing status, AI settings access, device-level generation totals, and TOTP authenticator enrolment.
 - **FR-027:** Restrict the admin portal with a server-side email allowlist, require an AAL2 authenticator session, and report provider, billing, and compliance readiness.
 - **FR-028:** Cover Singapore PDPA, GDPR, data protection, retention, responsible AI, and terms in the policy page.
+- **FR-029:** Separate DocBeans into frontend, backend-generation, and authentication service boundaries within the Worker deployment.
+- **FR-030:** Prevent frontend and backend-generation modules from importing Supabase or another identity-provider SDK directly.
+- **FR-031:** Define provider-neutral browser and server authentication contracts for identity, sessions, social/email sign-in, password recovery, TOTP MFA, and assurance level.
+- **FR-032:** Keep framework API routes thin and delegate generation, validation, provider calls, and usage calculation to the backend service.
 
 ## Edge Cases
 
@@ -121,6 +138,8 @@ As a user, I sign in before creating documents and can review billing, usage, an
 - A job description lacks organisation, location, application method, or required qualifications.
 - A user switches provider after entering a key.
 - Currency and tax treatment differ from the customer’s billing country.
+- The configured authentication provider is missing, unsupported, or temporarily unavailable.
+- A future identity provider represents users, social connections, or MFA assurance differently from Supabase.
 
 ## Success Criteria
 
@@ -133,6 +152,8 @@ As a user, I sign in before creating documents and can review billing, usage, an
 - **SC-007:** Styling choices remain visible in the generated preview and supported downloaded output.
 - **SC-008:** Unauthenticated visitors cannot open the document or settings workspace without starting the platform sign-in flow.
 - **SC-009:** Public navigation contains no separate Features, Updates, Settings, Admin, or Policy header links.
+- **SC-010:** Provider-specific authentication SDK imports exist only inside the selected authentication adapter.
+- **SC-011:** A production build succeeds after the service-boundary refactor with unchanged public routes and user workflows.
 
 ## Out of Scope for Current Beta
 

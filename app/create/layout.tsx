@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import { requireDocBeansUser } from '@/lib/supabase/server';
+import { requireAuthenticatedUser } from '@/services/auth/server';
 
 export const dynamic = 'force-dynamic';
 
 export default async function CreateLayout({ children }: { children: ReactNode }) {
-  await requireDocBeansUser('/create');
+  await requireAuthenticatedUser('/create');
   return children;
 }

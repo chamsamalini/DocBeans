@@ -4,7 +4,7 @@
 
 ## Summary
 
-Maintain DocBeans as a document-first web application with a white-background public experience, platform-managed account entry, adaptive Quick Document flows, a governed Advanced Brief, application-wide AI settings, transparent managed/BYOK billing, quality review, professional document styling, and separate user and admin portals.
+Maintain DocBeans as a document-first web application with a white-background public experience, provider-neutral account entry, adaptive Quick Document flows, a governed Advanced Brief, application-wide AI settings, transparent managed/BYOK billing, quality review, professional document styling, and separate user and admin portals. Deploy one Cloudflare Worker while enforcing separate frontend, backend, and authentication module boundaries.
 
 ## Technical Context
 
@@ -17,6 +17,7 @@ Maintain DocBeans as a document-first web application with a white-background pu
 - **Testing:** Production build, route verification, visual browser review, and focused generation-accounting checks
 - **Target platforms:** Modern desktop/mobile browsers; packaged desktop edition planned
 - **Constraints:** No automatic publishing; no BYOK credentials in logs; Cloudflare-compatible fetch APIs; desktop installer and checkout not yet implemented
+- **Architecture:** Modular monolith with frontend, backend-generation, and replaceable authentication services behind stable contracts
 
 ## Constitution Check
 
@@ -51,6 +52,19 @@ components/
 ├── marketing-header.tsx
 ├── marketing-page.tsx
 └── site-footer.tsx
+services/
+├── auth/
+│   ├── adapters/supabase/
+│   ├── client.ts
+│   ├── server.ts
+│   ├── config.ts
+│   └── contracts.ts
+├── backend/
+│   └── generation/
+│       ├── job-service.ts
+│       └── quick-service.ts
+└── frontend/
+    └── account/
 lib/
 ├── ai-settings.ts
 └── job-generation.ts
@@ -75,7 +89,11 @@ specs/001-docbeans-product/
 10. Make TOTP authenticator MFA available to every user and mandatory for administrator accounts identified through a server-side allowlist.
 11. Keep public navigation focused on About, Pricing, Manual, and Create Document; place compliance policy links only in the footer.
 12. Keep billing controls informational until a payment provider and durable account ledger are connected.
+13. Deploy one Worker for operational simplicity and same-origin sessions, but keep frontend, backend, and authentication as explicit code ownership boundaries.
+14. Allow provider SDK imports only inside `services/auth/adapters/<provider>`; all consumers use the stable auth contracts and facades.
+15. Keep `app/api` as thin transport wiring and place generation business logic in `services/backend/generation`.
+16. Reserve `DOCBEANS_AUTH_PROVIDER` as the adapter selector; Supabase is active and Auth0 is an extension point rather than a cross-application rewrite.
 
 ## Delivery
 
-Build the Worker bundle, visually verify affected routes, commit and push the exact source state, save a Sites version, and privately publish it to the existing DocBeans Site.
+Type-check the service contracts, verify provider-specific imports remain isolated, build the Worker bundle, verify affected routes, commit and push the exact source state, save a Sites version, and privately publish it to the existing DocBeans Site. The detailed topology and provider-swap procedure live in `docs/deployment-architecture.md`.

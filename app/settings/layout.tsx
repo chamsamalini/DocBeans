@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import { requireDocBeansUser } from '@/lib/supabase/server';
+import { requireAuthenticatedUser } from '@/services/auth/server';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SettingsLayout({ children }: { children: ReactNode }) {
-  await requireDocBeansUser('/settings');
+  await requireAuthenticatedUser('/settings');
   return children;
 }

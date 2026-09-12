@@ -10,3 +10,6 @@
 - [x] Success criteria are measurable or directly verifiable.
 - [x] Out-of-scope items prevent inactive features from being misrepresented.
 - [x] About, pricing, manual, policy, account, portal, and generation behavior share one source of truth.
+- [x] Frontend, backend, and authentication service boundaries have explicit responsibilities.
+- [x] Authentication provider replacement is constrained to the authentication service and runtime configuration.
+- [x] Deployment topology and provider-specific secret ownership are documented.

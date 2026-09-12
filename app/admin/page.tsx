@@ -3,14 +3,16 @@ import { Activity, CreditCard, ShieldCheck, Users } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
 import { SiteFooter } from '@/components/site-footer';
 import { buttonVariants } from '@/components/ui/button';
-import { requireDocBeansAdmin } from '@/lib/supabase/server';
+import { requireAdministrator } from '@/services/auth/server';
+import { getConfiguredAuthProvider } from '@/services/auth/config';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPortalPage() {
-  const user = await requireDocBeansAdmin();
+  const user = await requireAdministrator();
+  const authProvider = getConfiguredAuthProvider();
   const cards = [
-    [Users,'Account access','Supabase Auth','Google, Microsoft and verified work-email account creation are supported.'],
+    [Users,'Account access',authProvider==='supabase'?'Supabase Auth':'Auth0','Google, Microsoft and verified work-email account creation are supported.'],
     [Activity,'AI providers','2 configured','Anthropic and OpenAI are available through managed AI or BYOK.'],
     [CreditCard,'Billing','Not connected','Subscription checkout, invoices and payment events still require a billing provider.'],
     [ShieldCheck,'Compliance','Policy published','PDPA, GDPR and data-protection commitments are available in the footer.'],

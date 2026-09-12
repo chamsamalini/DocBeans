@@ -27,15 +27,21 @@
 - [x] T020 Add Supabase account entry for Google, Microsoft and verified work email, then protect document and AI-settings routes
 - [x] T021 Add user and admin portals with billing, usage, provider, compliance status, and authenticator MFA
 - [x] T022 Expand policy coverage for PDPA, GDPR, and data protection
+- [x] T023 Extract provider-neutral authentication contracts and Supabase browser/server adapters
+- [x] T024 Move account UI into the frontend service boundary
+- [x] T025 Move generation and validation logic into the backend service boundary and keep API routes thin
+- [x] T026 Document the single-Worker deployment topology, runtime configuration, and Auth0 replacement procedure
+- [x] T027 Add authentication provider selection to the environment contract
 
 ## Planned commercial and desktop work
 
-- [ ] T023 Define checkout, subscription lifecycle, invoices, refunds, and tax-calculation requirements
-- [ ] T024 Connect a payment provider for USD 7 monthly platform subscriptions
-- [ ] T025 Add durable account-level usage and billing history
-- [ ] T026 Configure and enforce an administrator email or role allowlist before widening Site access
-- [ ] T027 Design desktop licensing for the USD 45 one-time purchase
-- [ ] T028 Package, sign, and verify the desktop installer
-- [ ] T029 Implement secure post-purchase desktop download delivery
-- [ ] T030 Define desktop updates, supported operating systems, and upgrade policy
-- [ ] T031 Add automated billing-accounting tests for managed AI and BYOK
+- [ ] T028 Define checkout, subscription lifecycle, invoices, refunds, and tax-calculation requirements
+- [ ] T029 Connect a payment provider for USD 7 monthly platform subscriptions
+- [ ] T030 Add durable account-level usage and billing history
+- [ ] T031 Configure an administrator email allowlist before widening Site access
+- [ ] T032 Design desktop licensing for the USD 45 one-time purchase
+- [ ] T033 Package, sign, and verify the desktop installer
+- [ ] T034 Implement secure post-purchase desktop download delivery
+- [ ] T035 Define desktop updates, supported operating systems, and upgrade policy
+- [ ] T036 Add automated billing-accounting tests for managed AI and BYOK
+- [ ] T037 Implement and validate an Auth0 adapter if the product owner selects Auth0
