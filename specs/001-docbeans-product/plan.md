@@ -56,7 +56,7 @@ specs/001-docbeans-product/
 
 ## Design Decisions
 
-1. Use Features as the public landing page and keep Quick Document as the default working surface at `/create`.
+1. Use a combined Features and About page as the public landing page, include current product updates there, and keep Quick Document as the default working surface at `/create`.
 2. Store provider/model preference locally and BYOK credentials in session storage.
 3. Determine BYOK billing from a request that explicitly identifies BYOK and supplies a provider key.
 4. Keep provider-cost values as estimates based on returned token usage and configured rates.

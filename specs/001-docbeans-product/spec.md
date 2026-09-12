@@ -59,7 +59,7 @@ As a user, I can review quality warnings, edit generated content, apply document
 
 As a prospective customer, I can understand features, pricing, usage billing, taxes, privacy, and product limitations before using DocBeans.
 
-**Independent test:** Navigate through Features, Pricing, Manual, About, and Policy and confirm that shared navigation and footer links work.
+**Independent test:** Navigate through the combined Features and About landing page, Pricing, Manual, and Policy and confirm that shared navigation and footer links work.
 
 **Acceptance scenarios**
 
@@ -86,7 +86,7 @@ As a prospective customer, I can understand features, pricing, usage billing, ta
 - **FR-014:** Allow generated job descriptions to be edited before copying.
 - **FR-015:** Provide document font and theme presets independent of interface typography.
 - **FR-016:** Support print/save-to-PDF and destination-ready copy for LinkedIn and job portals.
-- **FR-017:** Use Features as the `/` landing page, provide the document workspace at `/create`, and retain Features, Pricing, Manual, About, Settings, and Policy routes.
+- **FR-017:** Use a combined Features and About page as the `/` landing page, provide the document workspace at `/create`, retain Pricing, Manual, Settings, and Policy routes, and redirect legacy `/about` links to the About section.
 - **FR-018:** Display the USD 7 monthly web platform fee and USD 45 one-time desktop price.
 - **FR-019:** State that taxes depend on the billing country and applicable local rules.
 - **FR-020:** Keep desktop checkout and installer controls inactive and clearly labelled until delivery is implemented.

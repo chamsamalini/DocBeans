@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {
   ArrowRight, BookOpenCheck, BrainCircuit, Check, Download, FileCheck2, Files,
-  Palette, ShieldCheck, SlidersHorizontal,
+  LockKeyhole, Palette, ShieldCheck, SlidersHorizontal, Sparkles,
   Type, WandSparkles,
 } from 'lucide-react';
 import { MarketingPage } from '@/components/marketing-page';
@@ -49,6 +49,19 @@ const controls = [
   [Download,'Output','Generate PDF, DOCX, PPTX, TXT or XLSX files'],
 ] as const;
 
+const productPrinciples = [
+  [Sparkles, 'Simple when it should be', 'Quick Document asks only for the details that matter to the document selected.'],
+  [ShieldCheck, 'Controlled when it must be', 'Advanced Brief adds requirements, approved knowledge, traceability and human review.'],
+  [FileCheck2, 'Relevant by design', 'Questions, structure, tone and styling adapt to the purpose of each document.'],
+  [LockKeyhole, 'Human accountability', 'Every output remains a draft until its facts, commitments and sensitive details are reviewed.'],
+] as const;
+
+const latestUpdates = [
+  ['Five genuine downloads', 'Export generated work as PDF, DOCX, PPTX, TXT or XLSX.'],
+  ['Executive document design', 'Choose the theme, font, text colours, header layout and subheader treatment.'],
+  ['Application-wide AI settings', 'Select Anthropic or OpenAI once and use DocBeans-managed access or BYOK.'],
+] as const;
+
 export default function FeaturesPage() {
   return <MarketingPage
     kicker="DocBeans product"
@@ -69,6 +82,10 @@ export default function FeaturesPage() {
     <section className="mt-16 rounded-[22px] border border-border bg-card p-7 shadow-[0_18px_55px_rgba(18,63,85,.08)] sm:p-9"><div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr]"><div><p className="marketing-kicker">Document design system</p><h2 className="mt-3 text-3xl leading-tight tracking-[-.035em]">Presentation controls belong inside the workflow.</h2><p className="mt-4 text-base leading-7 text-muted-foreground">Choose a coordinated preset, then adjust the details required for your brand, audience or destination.</p><Link href="/create" className={buttonVariants({variant:'outline',className:'mt-6 gap-2'})}>Open document workspace <ArrowRight className="size-4" /></Link></div><div className="grid gap-4 sm:grid-cols-2">{controls.map(([Icon,title,text])=><div key={title} className="rounded-2xl bg-muted/65 p-5"><Icon className="size-5 text-primary" /><h3 className="mt-4 text-base font-semibold">{title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}</div></div></section>
 
     <section className="mt-10 grid gap-4 md:grid-cols-3"><article className="marketing-card"><BrainCircuit className="size-5 text-primary" /><h3 className="mt-4 text-lg font-semibold">AI choice</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Use Anthropic or OpenAI with DocBeans-managed access or your own key.</p></article><article className="marketing-card"><FileCheck2 className="size-5 text-primary" /><h3 className="mt-4 text-lg font-semibold">Review controls</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Check structure, completeness, unsupported claims and publication readiness.</p></article><article className="marketing-card"><BookOpenCheck className="size-5 text-primary" /><h3 className="mt-4 text-lg font-semibold">Human accountability</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Every output remains a draft until names, facts, commitments and sensitive details are verified.</p></article></section>
+
+    <section id="about" className="mt-16 scroll-mt-24 border-y border-border py-12"><div className="grid gap-10 lg:grid-cols-[.75fr_1.25fr]"><div><p className="marketing-kicker">About DocBeans</p><h2 className="mt-3 text-3xl leading-tight tracking-[-.035em]">Better documents start with the right amount of structure.</h2><p className="mt-5 text-base leading-7 text-muted-foreground">DocBeans helps people turn clear intent into professional, useful and review-ready documents without making a simple task feel complicated.</p><p className="mt-4 text-sm leading-6 text-muted-foreground">Use Quick Document for everyday work or Advanced Brief when governance, approved knowledge and traceability matter.</p></div><div className="grid gap-4 sm:grid-cols-2">{productPrinciples.map(([Icon,title,text])=><article key={title} className="rounded-2xl border border-border bg-card p-5"><span className="grid size-10 place-items-center rounded-xl bg-secondary text-primary"><Icon className="size-5" /></span><h3 className="mt-4 text-base font-semibold">{title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></article>)}</div></div></section>
+
+    <section id="latest-updates" className="mt-16 scroll-mt-24 rounded-[22px] bg-muted/65 p-7 sm:p-9"><div className="flex flex-wrap items-end justify-between gap-5"><div><p className="marketing-kicker">Latest updates</p><h2 className="mt-3 text-3xl tracking-[-.035em]">What is new in DocBeans.</h2></div><span className="rounded-full border border-border bg-background px-3 py-1.5 text-sm text-muted-foreground">September 2026</span></div><div className="mt-7 grid gap-4 md:grid-cols-3">{latestUpdates.map(([title,text],index)=><article key={title} className="rounded-2xl border border-border bg-card p-5"><span className="text-sm font-semibold text-[#16888b]">0{index + 1}</span><h3 className="mt-4 text-lg font-semibold">{title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></article>)}</div></section>
 
     <section className="mt-12 flex flex-col items-start justify-between gap-5 rounded-2xl bg-[#172d38] p-7 text-white sm:flex-row sm:items-center sm:p-8"><div><div className="flex items-center gap-3"><WandSparkles className="size-5 text-[#7bd0cf]" /><h2 className="text-xl">Create the document you need.</h2></div><p className="mt-2 text-sm leading-6 text-white/65">Start with a focused brief, then shape the presentation and download the reviewed result.</p></div><Link href="/create" className={buttonVariants({className:'h-11 shrink-0 gap-2 bg-white px-5 text-primary hover:bg-white/90'})}>Start creating <ArrowRight className="size-4" /></Link></section>
   </MarketingPage>;
