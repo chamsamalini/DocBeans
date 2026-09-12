@@ -29,6 +29,7 @@ As a business user, I can use Advanced Brief to define a content goal, upload or
 1. A user can upload multiple reference files or paste source content without selecting a writing role.
 2. Mandatory requirements receive a visible disposition.
 3. Assumptions and missing facts are surfaced rather than silently invented.
+4. A user can select the intended document type, target audience, tone, visual requirement, theme, font, colours, and download type; presentation requests must produce a slide-oriented structure rather than training modules.
 
 ### User Story 3 — Choose AI and billing mode (Priority: P1)
 
@@ -134,6 +135,8 @@ As the product owner, I can replace the authentication provider without changing
 - **FR-035:** Identify DocBeans as a product of Petreltech in the shared application footer.
 - **FR-036:** Allow administrators to use the standard User Portal and switch to the Admin Portal, while retaining administrator allowlist and AAL2 authenticator checks for administrative functions.
 - **FR-037:** Support a temporary disabled-authentication mode for an owner-restricted Site, bypassing the DocBeans login and MFA screens while routing Create Document directly to the workspace; require managed authentication to be restored before access is widened.
+- **FR-038:** Advanced Brief must offer document-type, audience, tone, and visual-requirement controls and adapt labels and draft structure to the selected document.
+- **FR-039:** Advanced Brief must provide the same theme, font, font-colour, header, and subheader controls as Quick Document, plus PDF, DOCX, PPTX, TXT, and XLSX download-type selection.
 
 ## Edge Cases
 

@@ -4,9 +4,9 @@ import { MarketingPage } from '@/components/marketing-page';
 
 const steps=[
   [Settings,'Set the AI provider','Open AI settings, choose Anthropic or OpenAI, select a model, and decide whether to use the managed key or BYOK.'],
-  [FileText,'Choose a document','Open Quick document for an everyday draft. Use Advanced brief when you want DocBeans to develop content from your own knowledge and formal requirements.'],
+  [FileText,'Choose a document','Open Quick document for an everyday draft. In Advanced brief, select the exact output—such as a presentation, report or proposal—before adding your content goal.'],
   [PenLine,'Provide the essential facts','Complete the required fields. Add names, dates, outcomes, scope and constraints that the document must preserve.'],
-  [UploadCloud,'Add your knowledge content','In Advanced brief, upload reference files or paste working notes, then confirm how strictly DocBeans should stay grounded in them.'],
+  [UploadCloud,'Add your knowledge content','In Advanced brief, upload reference files or paste working notes, choose the audience, tone and visual requirement, then confirm how strictly DocBeans should stay grounded in the sources.'],
   [SearchCheck,'Generate and review','Read the complete draft. Resolve quality notes and verify facts, claims, links, prices, dates and sensitive information.'],
   [CheckCircle2,'Edit, download or copy','Edit the generated content, apply its document design, then download PDF, DOCX, PPTX, TXT or XLSX—or copy destination-ready text.'],
 ] as const;
