@@ -1,15 +1,63 @@
-import { BrainCircuit, FileCheck2, KeyRound, LayoutTemplate, Palette, Share2, ShieldCheck, WandSparkles } from 'lucide-react';
+import {
+  BookOpenCheck, BrainCircuit, Download, FileCheck2, Files,
+  KeyRound, LayoutTemplate, Palette, ReceiptText, Share2, ShieldCheck, UserRoundPen,
+  WandSparkles,
+} from 'lucide-react';
 import { MarketingPage } from '@/components/marketing-page';
 
-const features=[
-  [WandSparkles,'Quick document generation','Create letters, proposals, quotations, curricula, job descriptions, meeting records and other practical documents from focused prompts.'],
-  [BrainCircuit,'Choice of AI model','Select Anthropic or OpenAI once in AI settings. The choice applies across every AI-generated document workflow.'],
-  [KeyRound,'Bring your own key','Use the managed DocBeans key or your own provider key. BYOK credentials remain session-only in the current browser tab.'],
-  [FileCheck2,'Quality checks','Job descriptions receive structure, repetition, unsupported-claim and publication-readiness checks before use.'],
-  [Palette,'Professional presentation','Choose an appropriate font and document theme, then print or save the finished document as a PDF.'],
-  [Share2,'Destination-ready copy','Prepare clean copy for LinkedIn, job portals and other publishing destinations without publishing automatically.'],
-  [LayoutTemplate,'Quick and advanced modes','Use a compact form for everyday documents or a governed brief when requirements and source traceability matter.'],
-  [ShieldCheck,'Human review by design','Generated content remains a draft until a person checks names, claims, dates, commitments and sensitive details.'],
+const groups = [
+  {
+    label:'Create',
+    title:'Start with the document—not a blank prompt.',
+    description:'DocBeans changes the questions and structure to match what you are creating.',
+    features:[
+      [Files,'Practical document library','Create appreciation and recommendation letters, testimonials, leave requests, job descriptions, quotations, proposals, curricula, meeting records, SOPs and more.'],
+      [WandSparkles,'Quick Document','Answer only the focused questions needed for the selected document and move quickly to a usable draft.'],
+      [LayoutTemplate,'Advanced Brief','Define role, purpose, requirements, output and approved knowledge when governance and traceability matter.'],
+      [UserRoundPen,'Roles, tone and context','Choose a writing role or enter a custom one, then guide vocabulary, audience relationship and professional tone.'],
+    ],
+  },
+  {
+    label:'Control AI',
+    title:'Choose the model and who pays for it.',
+    description:'AI settings apply across the application, while every generation remains visible and accountable.',
+    features:[
+      [BrainCircuit,'Application-wide model choice','Select Anthropic or OpenAI and the preferred model once for every DocBeans workflow.'],
+      [KeyRound,'Managed AI or BYOK','Use DocBeans-managed AI or bring your own provider key. BYOK credentials remain session-only in the current browser tab.'],
+      [ReceiptText,'Transparent usage and charges','See returned token usage, estimated provider cost, credits consumed and the DocBeans generation charge after each successful request.'],
+      [ShieldCheck,'Safe fallback behavior','If no provider is configured, DocBeans can produce a local-rule draft without provider tokens or AI credits.'],
+    ],
+  },
+  {
+    label:'Review and deliver',
+    title:'Turn the draft into something ready to use.',
+    description:'Presentation, quality checks and destination-aware output stay part of the same workflow.',
+    features:[
+      [FileCheck2,'Quality and publication checks','Review structure, repetition, unsupported claims, missing details and publication readiness—especially for job descriptions.'],
+      [BookOpenCheck,'Human review by design','Generated content remains a draft until a person verifies names, facts, links, dates, prices, commitments and sensitive details.'],
+      [Palette,'Professional document styling','Select a document font and preset theme independently from the consistent DocBeans interface style.'],
+      [Share2,'Export and destination-ready copy','Edit the draft, print or save it as PDF, and copy clean text for LinkedIn or job portals without automatic publishing.'],
+    ],
+  },
 ] as const;
 
-export default function FeaturesPage(){return <MarketingPage kicker="Product capabilities" title="Useful documents without an oversized workflow." intro="DocBeans combines focused inputs, selectable AI models and visible review controls so people can move from intent to a professional draft quickly."><div className="grid gap-4 md:grid-cols-2">{features.map(([Icon,title,text])=><article className="marketing-card" key={title}><span className="grid size-11 place-items-center rounded-xl bg-secondary text-primary"><Icon className="size-5" /></span><h2 className="mt-5 text-xl tracking-[-.02em]">{title}</h2><p className="mt-3 text-base leading-7 text-muted-foreground">{text}</p></article>)}</div></MarketingPage>}
+export default function FeaturesPage() {
+  return <MarketingPage
+    kicker="Product capabilities"
+    title="A focused path from intent to a reviewed document."
+    intro="DocBeans combines document-specific guidance, flexible AI access, visible quality controls and professional output—without turning a simple writing task into a complex workflow."
+  >
+    <div className="space-y-12">
+      {groups.map(group=><section key={group.label}>
+        <div className="grid gap-4 lg:grid-cols-[.75fr_1.25fr] lg:gap-10">
+          <div><p className="marketing-kicker">{group.label}</p><h2 className="mt-3 text-3xl leading-tight tracking-[-.035em]">{group.title}</h2><p className="mt-4 text-base leading-7 text-muted-foreground">{group.description}</p></div>
+          <div className="grid gap-4 sm:grid-cols-2">{group.features.map(([Icon,title,text])=><article className="marketing-card" key={title}><span className="grid size-11 place-items-center rounded-xl bg-secondary text-primary"><Icon className="size-5" /></span><h3 className="mt-5 text-lg font-semibold tracking-[-.02em]">{title}</h3><p className="mt-3 text-sm leading-6 text-muted-foreground">{text}</p></article>)}</div>
+        </div>
+      </section>)}
+    </div>
+    <section className="mt-12 grid gap-5 rounded-2xl bg-primary p-6 text-primary-foreground sm:p-8 md:grid-cols-[1fr_auto] md:items-center">
+      <div><div className="flex items-center gap-3"><Download className="size-5 text-[#7bd0cf]" /><h2 className="text-xl">Web today. Desktop next.</h2></div><p className="mt-3 max-w-3xl text-sm leading-6 text-white/70">DocBeans is currently available through the web platform. The USD 45 one-time desktop edition is planned; checkout and installer delivery are not yet connected.</p></div>
+      <span className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white/80">Desktop coming soon</span>
+    </section>
+  </MarketingPage>;
+}
