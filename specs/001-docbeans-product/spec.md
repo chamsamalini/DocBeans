@@ -20,13 +20,13 @@ As a user, I can select a document type, answer a small set of relevant question
 
 ### User Story 2 — Create a governed business document (Priority: P1)
 
-As a business user, I can use Advanced Brief to define the writing role, purpose, audience, requirements, output, and approved knowledge before generation.
+As a business user, I can use Advanced Brief to define a content goal, upload or paste trusted knowledge, set content requirements, and choose the output before generation.
 
-**Independent test:** Complete the five-part brief with a custom role and mandatory requirements, review the interpreted brief, and generate a traceable draft.
+**Independent test:** Complete the four-step brief with source content and mandatory requirements, review the interpreted brief, and develop a traceable draft.
 
 **Acceptance scenarios**
 
-1. A user can select a predefined writing role or enter a custom role.
+1. A user can upload multiple reference files or paste source content without selecting a writing role.
 2. Mandatory requirements receive a visible disposition.
 3. Assumptions and missing facts are surfaced rather than silently invented.
 
@@ -100,7 +100,7 @@ As the product owner, I can replace the authentication provider without changing
 - **FR-001:** Support the implemented Quick Document catalogue: appreciation, thank-you, recommendation, testimonial, cover letter, job description, quotation, proposal, project brief, executive summary, curriculum, SOP, memo, announcement, meeting agenda, meeting minutes, leave request, and medical leave request.
 - **FR-002:** Adapt field labels, help text, tone choices, validation, and output structure to the selected document type.
 - **FR-003:** Provide Quick Document and Advanced Brief modes.
-- **FR-004:** Allow predefined and custom writing roles.
+- **FR-004:** Advanced Brief must use a four-step, knowledge-led flow: content goal, knowledge, requirements, and output; it must not request a writing role.
 - **FR-005:** Provide application-wide provider, model, and credential-mode settings.
 - **FR-006:** Support Anthropic and OpenAI through managed credentials or BYOK.
 - **FR-007:** Keep BYOK credentials in session storage only and exclude them from logs.

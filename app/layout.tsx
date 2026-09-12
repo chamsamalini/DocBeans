@@ -20,7 +20,7 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   metadataBase: new URL('https://docbeans.ganga-devi-9467.chatgpt.site'),
   title: 'DocBeans — Knowledge-grounded document creation',
-  description: 'Turn a clear five-part brief into a grounded, reviewable and traceable business document.',
+  description: 'Develop grounded, reviewable and traceable business documents from trusted knowledge and a clear content brief.',
   openGraph: {
     title: 'DocBeans — Build better documents, from a better brief.',
     description: 'Grounded. Traceable. Review-ready.',

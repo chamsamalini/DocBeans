@@ -3,7 +3,7 @@
 ## Completed product foundation
 
 - [x] T001 Implement adaptive Quick Document workflows in `app/page.tsx`
-- [x] T002 Implement five-part Advanced Brief and custom roles in `app/page.tsx`
+- [x] T002 Implement the four-step, knowledge-led Advanced Brief without writing roles in `app/create/page.tsx`
 - [x] T003 Implement application-wide AI settings in `app/settings/page.tsx`
 - [x] T004 Implement Anthropic and OpenAI generation routes
 - [x] T005 Implement managed-AI and BYOK accounting separation
