@@ -575,8 +575,46 @@ function ReviewScreen({ documentType, purpose, audience, outcome, tone, visuals,
 
 function DraftScreen({ documentType, purpose, audience, tone, visuals, exportFormat, font, theme, colours, requirements, sources, knowledgeNotes, onEditBrief }: { documentType:AdvancedDocumentType; purpose:string; audience:string; tone:string; visuals:VisualPreference; exportFormat:ExportFormat; font:DocumentFont; theme:DocumentTheme; colours:DocumentColours; requirements:Requirement[]; sources:Source[]; knowledgeNotes:string; onEditBrief:()=>void }) {
   const [tab,setTab]=useState<'document'|'coverage'|'sources'>('document');
+  const [exporting,setExporting]=useState(false);
+  const [exportError,setExportError]=useState('');
   const sections = getAdvancedDraftSections(documentType,purpose,visuals);
   const preset = documentThemes[theme];
+  const title = purpose || advancedDocumentLabels[documentType];
+  const baseName = advancedDocumentLabels[documentType].toLowerCase().replace(/[^a-z0-9]+/g,'-') || 'docbeans-document';
+  const text = [title,`For ${audience}`,`Tone: ${tone}`,'',...sections.flatMap(([heading,body])=>[heading,body,''])].join('\n').trim();
+
+  const saveBlob = (blob:Blob,fileName:string) => {
+    const url=URL.createObjectURL(blob); const link=document.createElement('a');
+    link.href=url; link.download=fileName; document.body.appendChild(link); link.click(); link.remove();
+    window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+
+  const downloadAdvancedDocument = async () => {
+    setExporting(true); setExportError('');
+    try {
+      if(exportFormat==='txt') saveBlob(new Blob([text],{type:'text/plain;charset=utf-8'}),`${baseName}.txt`);
+      else if(exportFormat==='pdf') {
+        const {jsPDF}=await import('jspdf'); const pdf=new jsPDF({unit:'pt',format:'a4'}); const width=pdf.internal.pageSize.getWidth(); const height=pdf.internal.pageSize.getHeight(); const margin=54;
+        pdf.setFont('helvetica','bold'); pdf.setFontSize(20); pdf.setTextColor(colours.heading); pdf.text(advancedDocumentLabels[documentType],margin,64);
+        pdf.setFont('helvetica','normal'); pdf.setFontSize(11); pdf.setTextColor(colours.body); let y=94;
+        for(const line of pdf.splitTextToSize(text,width-margin*2) as string[]){if(y>height-margin){pdf.addPage();y=margin;}pdf.text(line,margin,y);y+=16;}
+        pdf.save(`${baseName}.pdf`);
+      } else if(exportFormat==='docx') {
+        const {Document,HeadingLevel,Packer,Paragraph,TextRun}=await import('docx');
+        const children=[new Paragraph({text:title,heading:HeadingLevel.TITLE}),new Paragraph({children:[new TextRun({text:`For ${audience} · ${tone}`,italics:true})]}),...sections.flatMap(([heading,body])=>[new Paragraph({text:heading,heading:HeadingLevel.HEADING_1}),new Paragraph({text:body})])];
+        saveBlob(await Packer.toBlob(new Document({sections:[{properties:{},children}]})),`${baseName}.docx`);
+      } else if(exportFormat==='pptx') {
+        const PptxGenJS=(await import('pptxgenjs')).default; const deck=new PptxGenJS(); const fontFace=font==='georgia'?'Georgia':font==='times'?'Times New Roman':font==='montserrat'?'Montserrat':'Arial';
+        deck.layout='LAYOUT_WIDE'; deck.author='DocBeans'; deck.title=title; deck.subject=advancedDocumentLabels[documentType];
+        const opening=deck.addSlide(); opening.background={color:preset.surface.replace('#','')}; opening.addShape(deck.ShapeType.rect,{x:0,y:0,w:0.2,h:7.5,fill:{color:colours.heading.replace('#','')},line:{color:colours.heading.replace('#','')}}); opening.addText(title,{x:0.85,y:2.1,w:11.3,h:1.4,fontFace,fontSize:28,bold:true,color:colours.heading.replace('#',''),margin:0}); opening.addText(`For ${audience} · ${tone}`,{x:0.88,y:3.65,w:8,h:0.4,fontFace,fontSize:12,color:colours.subheading.replace('#',''),margin:0});
+        for(const [heading,body] of sections){const slide=deck.addSlide();slide.background={color:preset.surface.replace('#','')};slide.addText(heading,{x:0.7,y:0.48,w:11.8,h:0.55,fontFace,fontSize:22,bold:true,color:colours.heading.replace('#',''),margin:0});slide.addShape(deck.ShapeType.line,{x:0.7,y:1.12,w:11.8,h:0,line:{color:preset.border.replace('#',''),width:1}});slide.addText(body,{x:0.85,y:1.45,w:visuals==='yes'?7.4:11.3,h:4.9,fontFace,fontSize:18,color:colours.body.replace('#',''),breakLine:true,margin:0.08,valign:'top'});if(visuals==='yes')slide.addShape(deck.ShapeType.roundRect,{x:8.7,y:1.5,w:3.7,h:3.8,rectRadius:0.08,fill:{color:preset.soft.replace('#','')},line:{color:preset.border.replace('#','')}}),slide.addText('Visual suggestion\n\nAdd a relevant chart, diagram or image supported by the source material.',{x:9.05,y:2.2,w:3,h:2.2,fontFace,fontSize:13,color:colours.subheading.replace('#',''),align:'center',valign:'mid',margin:0.05});}
+        await deck.writeFile({fileName:`${baseName}.pptx`});
+      } else {
+        const XLSX=await import('xlsx'); const workbook=XLSX.utils.book_new(); const rows=[['Document',advancedDocumentLabels[documentType]],['Title',title],['Audience',audience],['Tone',tone],[],['Section','Content'],...sections]; const worksheet=XLSX.utils.aoa_to_sheet(rows); worksheet['!cols']=[{wch:28},{wch:100}]; XLSX.utils.book_append_sheet(workbook,worksheet,'Document'); XLSX.writeFile(workbook,`${baseName}.xlsx`,{compression:true});
+      }
+    } catch(error) { setExportError(error instanceof Error?`Could not create the ${exportFormat.toUpperCase()} file: ${error.message}`:`Could not create the ${exportFormat.toUpperCase()} file.`); }
+    finally { setExporting(false); }
+  };
   return <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_310px]">
     <section className="overflow-hidden rounded-[22px] border border-border bg-card shadow-[0_16px_50px_rgba(39,70,54,0.07)]">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-[#fafafa] px-5 py-3"><div className="flex gap-1">{(['document','coverage','sources'] as const).map(item=><button type="button" key={item} onClick={()=>setTab(item)} className={`rounded-lg px-3 py-2 text-xs font-semibold capitalize ${tab===item?'bg-white text-primary shadow-sm':'text-muted-foreground hover:text-foreground'}`}>{item}</button>)}</div><Button size="sm" variant="outline" onClick={onEditBrief}>Edit brief</Button></div>
@@ -584,7 +622,7 @@ function DraftScreen({ documentType, purpose, audience, tone, visuals, exportFor
       {tab==='coverage'&&<div className="p-6 sm:p-8"><h2 className="text-lg font-semibold">Requirement coverage</h2><p className="mt-1 text-sm text-muted-foreground">Each requirement is linked to the selected document structure.</p><div className="mt-5 space-y-3">{requirements.map((req,i)=><div key={req.id} className="rounded-xl border border-border p-4"><div className="flex items-start gap-3"><span className="grid size-6 place-items-center rounded-full bg-[#ececea] text-primary"><Check className="size-3.5" /></span><div className="flex-1"><p className="text-sm font-medium">{req.text}</p><p className="mt-2 text-xs text-muted-foreground">Linked to {sections[Math.min(i,sections.length-1)][0]}</p></div><Badge className="bg-[#ececea] text-primary">Addressed</Badge></div></div>)}</div></div>}
       {tab==='sources'&&<div className="p-6 sm:p-8"><h2 className="text-lg font-semibold">Knowledge trace</h2><p className="mt-1 text-sm text-muted-foreground">Only the knowledge supplied in this brief is listed.</p><div className="mt-5 space-y-3">{sources.map(source=><div key={source.id} className="flex items-center gap-3 rounded-xl border border-border p-4"><FileText className="size-4 text-primary" /><div className="flex-1"><p className="text-sm font-medium">{source.name}</p><p className="mt-1 text-xs text-muted-foreground">{source.meta}</p></div><Badge variant="outline">Used</Badge></div>)}{knowledgeNotes.trim()&&<div className="flex items-center gap-3 rounded-xl border border-border p-4"><BookOpen className="size-4 text-primary" /><div><p className="text-sm font-medium">Pasted knowledge and notes</p><p className="mt-1 text-xs text-muted-foreground">Included as a source input</p></div></div>}</div></div>}
     </section>
-    <aside className="space-y-4"><div className="rounded-[20px] border border-border bg-card p-5"><h3 className="text-sm font-semibold">Output settings</h3><dl className="mt-4 space-y-3 text-xs"><div><dt className="text-muted-foreground">Document</dt><dd className="mt-1 font-medium">{advancedDocumentLabels[documentType]}</dd></div><div><dt className="text-muted-foreground">Download</dt><dd className="mt-1 font-medium">{exportFormat.toUpperCase()}</dd></div><div><dt className="text-muted-foreground">Design</dt><dd className="mt-1 font-medium">{preset.label} · {documentFonts[font].label.split(' · ')[0]}</dd></div><div><dt className="text-muted-foreground">Visuals</dt><dd className="mt-1 font-medium">{visuals==='yes'?'Included':'Text only'}</dd></div></dl></div><div className="rounded-[20px] bg-[#161616] p-5 text-white"><ShieldCheck className="size-4 text-[#d6d6d2]" /><h3 className="mt-3 text-sm font-semibold">Human review required</h3><p className="mt-2 text-xs leading-5 text-white/70">Review the structure, claims and visual suggestions before downloading or sharing.</p></div></aside>
+    <aside className="space-y-4"><div className="rounded-[20px] border border-border bg-card p-5"><h3 className="text-sm font-semibold">Output settings</h3><dl className="mt-4 space-y-3 text-xs"><div><dt className="text-muted-foreground">Document</dt><dd className="mt-1 font-medium">{advancedDocumentLabels[documentType]}</dd></div><div><dt className="text-muted-foreground">Download</dt><dd className="mt-1 font-medium">{exportFormat.toUpperCase()}</dd></div><div><dt className="text-muted-foreground">Design</dt><dd className="mt-1 font-medium">{preset.label} · {documentFonts[font].label.split(' · ')[0]}</dd></div><div><dt className="text-muted-foreground">Visuals</dt><dd className="mt-1 font-medium">{visuals==='yes'?'Included':'Text only'}</dd></div></dl><Button className="mt-5 w-full" onClick={downloadAdvancedDocument} disabled={exporting}><Download /> {exporting?`Creating ${exportFormat.toUpperCase()}…`:`Download ${exportFormat.toUpperCase()}`}</Button>{exportError&&<p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs leading-5 text-red-800">{exportError}</p>}</div><div className="rounded-[20px] bg-[#161616] p-5 text-white"><ShieldCheck className="size-4 text-[#d6d6d2]" /><h3 className="mt-3 text-sm font-semibold">Human review required</h3><p className="mt-2 text-xs leading-5 text-white/70">Open the Document tab to review the content, then use the download button above.</p></div></aside>
   </div>;
 }
 
