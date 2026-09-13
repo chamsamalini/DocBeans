@@ -38,6 +38,9 @@
 - [x] T040 Add the Petreltech product attribution to the shared footer
 - [x] T041 Add temporary owner-only no-login mode with direct workspace and dual-portal access
 - [x] T042 Add a visible Advanced Brief Document review tab and functional PDF, DOCX, PPTX, TXT, and XLSX downloads in Output settings
+- [x] T043 Extract supported file and image knowledge in Advanced Brief instead of retaining filenames only
+- [x] T044 Add provider-backed structured Advanced Brief generation with source grounding, requirement coverage, usage accounting, and placeholder rejection
+- [x] T045 Generate substantive PowerPoint slides with editable source-supported visuals and gate all advanced downloads behind successful validation
 
 ## Planned commercial and desktop work
 

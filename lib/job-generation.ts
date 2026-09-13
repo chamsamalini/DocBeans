@@ -65,6 +65,41 @@ export type QuickGenerationResponse = {
   notice?:string;
 };
 
+export type AdvancedVisual = {
+  type:'none'|'chart'|'process'|'comparison'|'source-image';
+  title:string;
+  description:string;
+  labels:string[];
+  values:number[];
+};
+
+export type AdvancedSection = {
+  title:string;
+  summary:string;
+  bullets:string[];
+  visual:AdvancedVisual;
+};
+
+export type AdvancedDocument = {
+  title:string;
+  subtitle:string;
+  sections:AdvancedSection[];
+  sourcesUsed:string[];
+  requirementCoverage:{ requirement:string; status:'addressed'|'review'; evidence:string }[];
+  quality:{
+    score:number;
+    status:'ready'|'needs_review';
+    checks:QualityCheck[];
+    missingInformation:string[];
+  };
+};
+
+export type AdvancedGenerationResponse = {
+  document:AdvancedDocument;
+  usage:GenerationUsage;
+  notice?:string;
+};
+
 const bulletList = (items:string[]) => items.map(item => `• ${item}`).join('\n');
 
 export function formatGeneratedJob(document:GeneratedJobDocument, target:'linkedin'|'portal') {

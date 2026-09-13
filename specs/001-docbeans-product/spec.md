@@ -30,6 +30,9 @@ As a business user, I can use Advanced Brief to define a content goal, upload or
 2. Mandatory requirements receive a visible disposition.
 3. Assumptions and missing facts are surfaced rather than silently invented.
 4. A user can select the intended document type, target audience, tone, visual requirement, theme, font, colours, and download type; presentation requests must produce a slide-oriented structure rather than training modules.
+5. Advanced Brief extracts readable content from supported uploads and sends that content, not only filenames, to the selected AI provider.
+6. Download remains unavailable when the provider returns an error, incomplete structure, placeholder instructions, or insufficient developed content.
+7. When visuals are requested, presentations contain source-supported editable charts, process diagrams, comparisons, or supplied source images rather than visual placeholders.
 
 ### User Story 3 — Choose AI and billing mode (Priority: P1)
 
@@ -137,6 +140,8 @@ As the product owner, I can replace the authentication provider without changing
 - **FR-037:** Support a temporary disabled-authentication mode for an owner-restricted Site, bypassing the DocBeans login and MFA screens while routing Create Document directly to the workspace; require managed authentication to be restored before access is widened.
 - **FR-038:** Advanced Brief must offer document-type, audience, tone, and visual-requirement controls and adapt labels and draft structure to the selected document.
 - **FR-039:** Advanced Brief must provide the same theme, font, font-colour, header, and subheader controls as Quick Document, plus PDF, DOCX, PPTX, TXT, and XLSX download-type selection.
+- **FR-040:** Advanced Brief must extract knowledge from PDF, DOCX, PPTX, XLSX, text, and supported image uploads, send it with the brief to the configured provider, validate a structured document response, reject placeholder content, and unlock download only after successful validation.
+- **FR-041:** Presentation export must convert generated sections into substantive slides and requested visuals into source-supported editable charts, diagrams, comparisons, or supplied source images, with layout safeguards against clipped titles and overflowing content.
 
 ## Edge Cases
 
