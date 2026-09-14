@@ -45,6 +45,7 @@
 - [x] T047 Replace decorative grounding choices with approved-only and approved-plus-external-web modes, safe website retrieval, provider web search, and visible URL tracing
 - [x] T048 Raise Advanced Brief to 100 sources under a shared 500 MB upload allowance with no separate per-file cap, using temporary local chunk storage, relevance retrieval, bounded provider context and image optimisation
 - [x] T049 Add resilient Advanced Brief structured-output parsing, completion diagnostics, one controlled malformed-response retry, aggregate attempt usage, and saved-brief recovery messaging
+- [x] T050 Add saved user-adjustable Advanced output budgets, document-type defaults, pre-generation provider-cost ceilings, failed-attempt usage disclosure, and no-retry handling for explicit provider token caps
 
 ## Planned commercial and desktop work
 

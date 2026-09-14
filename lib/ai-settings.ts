@@ -1,14 +1,16 @@
 export type LlmProvider = 'anthropic' | 'openai';
 export type CredentialMode = 'managed' | 'byok';
 
-export const llmModels:Record<LlmProvider, { value:string; label:string; description:string }[]> = {
+export type LlmModelOption = { value:string; label:string; description:string; inputUsdPerMillion:number; outputUsdPerMillion:number };
+
+export const llmModels:Record<LlmProvider, LlmModelOption[]> = {
   anthropic: [
-    { value:'claude-sonnet-5', label:'Claude Sonnet 5', description:'Best balance of writing quality and reasoning' },
-    { value:'claude-haiku-4-5', label:'Claude Haiku 4.5', description:'Faster and lower-cost generation' },
+    { value:'claude-sonnet-5', label:'Claude Sonnet 5', description:'Best balance of writing quality and reasoning', inputUsdPerMillion:2, outputUsdPerMillion:10 },
+    { value:'claude-haiku-4-5', label:'Claude Haiku 4.5', description:'Faster and lower-cost generation', inputUsdPerMillion:1, outputUsdPerMillion:5 },
   ],
   openai: [
-    { value:'gpt-5-mini', label:'GPT-5 mini', description:'Fast, capable document generation' },
-    { value:'gpt-4.1-mini', label:'GPT-4.1 mini', description:'Reliable instruction following' },
+    { value:'gpt-5-mini', label:'GPT-5 mini', description:'Fast, capable document generation', inputUsdPerMillion:.25, outputUsdPerMillion:2 },
+    { value:'gpt-4.1-mini', label:'GPT-4.1 mini', description:'Reliable instruction following', inputUsdPerMillion:.4, outputUsdPerMillion:1.6 },
   ],
 };
 
