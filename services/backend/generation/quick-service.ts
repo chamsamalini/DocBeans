@@ -5,8 +5,8 @@ import type { GenerationUsage, QuickGenerationResponse } from '@/lib/job-generat
 type Provider = 'anthropic' | 'openai';
 const DOCBEANS_PRICE_SGD = 0.03;
 const PROVIDERS = {
-  anthropic:{ defaultModel:'claude-sonnet-5', models:{ 'claude-sonnet-5':{input:2,output:10}, 'claude-haiku-4-5':{input:1,output:5} } },
-  openai:{ defaultModel:'gpt-5-mini', models:{ 'gpt-5-mini':{input:.25,output:2}, 'gpt-4.1-mini':{input:.4,output:1.6} } },
+  anthropic:{ defaultModel:'claude-sonnet-5', models:{ 'claude-sonnet-5':{input:2,output:10}, 'claude-haiku-4-5-20251001':{input:1,output:5}, 'claude-haiku-4-5':{input:1,output:5} } },
+  openai:{ defaultModel:'gpt-5-mini', models:{ 'gpt-5-mini':{input:.25,output:2}, 'gpt-5.3-chat-latest':{input:1.75,output:14}, 'gpt-4.1-mini':{input:.4,output:1.6} } },
 } as const;
 const documentTypes = new Set(['appreciation','recommendation','testimonial','thank-you','cover-letter','quotation','proposal','project-brief','executive-summary','curriculum','memo','announcement','meeting-agenda','meeting-minutes','sop','leave','medical-leave']);
 const schema = { type:'object', additionalProperties:false, required:['title','body'], properties:{ title:{type:'string'}, body:{type:'string'} } } as const;

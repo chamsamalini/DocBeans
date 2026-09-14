@@ -11,12 +11,14 @@ const PROVIDERS = {
     models: {
       'claude-sonnet-5': { input: 2, output: 10 },
       'claude-haiku-4-5': { input: 1, output: 5 },
+      'claude-haiku-4-5-20251001': { input: 1, output: 5 },
     },
   },
   openai: {
     defaultModel: 'gpt-5-mini',
     models: {
       'gpt-5-mini': { input: 0.25, output: 2 },
+      'gpt-5.3-chat-latest': { input: 1.75, output: 14 },
       'gpt-4.1-mini': { input: 0.4, output: 1.6 },
     },
   },

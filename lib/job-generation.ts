@@ -69,6 +69,7 @@ export type AdvancedVisual = {
   type:'none'|'chart'|'process'|'comparison'|'source-image';
   title:string;
   description:string;
+  sourceName:string;
   labels:string[];
   values:number[];
 };

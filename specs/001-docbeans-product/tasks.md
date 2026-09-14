@@ -48,6 +48,9 @@
 - [x] T050 Add saved user-adjustable Advanced output budgets, document-type defaults, pre-generation provider-cost ceilings, failed-attempt usage disclosure, and no-retry handling for explicit provider token caps
 - [x] T051 Let customers change the saved output-token limit directly in final review and recalculate the provider-cost estimate immediately
 - [x] T052 Refine the Advanced LLM prompt with document-specific editorial standards, genuine training-design requirements, presentation readability limits, source-taxonomy caution, meaningful visual rules and corresponding quality rejection checks
+- [x] T053 Preserve mandatory requirement metadata through provider submission, require substantive Q & A delivery, and reject coverage-only claims
+- [x] T054 Require knowledge-derived training visuals, distinguish editable process and comparison rendering, and prevent source-image reuse from satisfying visual validation
+- [x] T055 Add Claude Haiku 4.5's active pinned model and the requested deprecated GPT-5.3 Chat API alias with provider-aligned cost estimates
 
 ## Planned commercial and desktop work
 

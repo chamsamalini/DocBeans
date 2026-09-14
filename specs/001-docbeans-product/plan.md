@@ -95,6 +95,9 @@ specs/001-docbeans-product/
 16. Give Advanced Brief a saved, adjustable output-token budget with document-type defaults; calculate a clear pre-generation cost ceiling from the selected model rates, and expose actual provider usage on failure without charging DocBeans credits. Treat an explicit provider output-limit stop as terminal for that attempt rather than retrying the same request.
 17. Treat provider output as an unreliable boundary: assemble all returned text blocks, parse a complete JSON object from permitted wrappers, log only structural diagnostics and completion reasons, and retry malformed structured output no more than once while aggregating usage across attempts.
 18. Reserve `DOCBEANS_AUTH_PROVIDER` as the adapter selector; Supabase is active and Auth0 is an extension point rather than a cross-application rewrite.
+19. Treat mandatory brief requirements as generation acceptance criteria, with semantic validation for specialised requests such as Q & A rather than trusting provider-authored coverage metadata.
+20. Treat uploaded images as knowledge inputs. For visual training output, require newly derived editable diagrams, comparisons, or charts and render each visual form with an instructional layout.
+21. Keep the shared model catalogue aligned to exact provider API identifiers and disclose deprecated requested models instead of presenting them as recommended defaults.
 
 ## Delivery
 
