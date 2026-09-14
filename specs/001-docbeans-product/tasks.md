@@ -42,6 +42,7 @@
 - [x] T044 Add provider-backed structured Advanced Brief generation with source grounding, requirement coverage, usage accounting, and placeholder rejection
 - [x] T045 Generate substantive PowerPoint slides with editable source-supported visuals and gate all advanced downloads behind successful validation
 - [x] T046 Keep Advanced Brief provider schemas compatible with Anthropic while enforcing section-count limits in DocBeans validation
+- [x] T047 Replace decorative grounding choices with approved-only and approved-plus-external-web modes, safe website retrieval, provider web search, and visible URL tracing
 
 ## Planned commercial and desktop work
 

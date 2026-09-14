@@ -6,8 +6,8 @@ const steps=[
   [Settings,'Set the AI provider','Open AI settings, choose Anthropic or OpenAI, select a model, and decide whether to use the managed key or BYOK.'],
   [FileText,'Choose a document','Open Quick document for an everyday draft. In Advanced brief, select the exact output—such as a presentation, report or proposal—before adding your content goal.'],
   [PenLine,'Provide the essential facts','Complete the required fields. Add names, dates, outcomes, scope and constraints that the document must preserve.'],
-  [UploadCloud,'Add your knowledge content','In Advanced brief, upload PDF, DOCX, PPTX, XLSX, text or image references. Wait until each file says Ready, then choose the audience, tone and visual requirement.'],
-  [SearchCheck,'Generate and review','DocBeans sends the extracted knowledge to your selected AI provider and validates the structured response. Read the complete draft, its requirement coverage and source trace before downloading.'],
+  [UploadCloud,'Add approved knowledge','In Advanced brief, upload PDF, DOCX, PPTX, XLSX, text or image references, paste notes, or fetch an exact public website URL. Wait until each source says Ready.'],
+  [SearchCheck,'Choose grounding and review','Use Approved sources only for strict evidence control, or Approved sources + external websites to permit provider web research. Review the complete draft, requirement coverage and source trace before downloading.'],
   [CheckCircle2,'Review and download','After generation, open the Document tab to review the developed content. In Output settings, select Download PDF, DOCX, PPTX, TXT or XLSX. Quick documents can also be copied for their destination.'],
 ] as const;
 

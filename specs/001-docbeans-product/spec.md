@@ -142,6 +142,7 @@ As the product owner, I can replace the authentication provider without changing
 - **FR-039:** Advanced Brief must provide the same theme, font, font-colour, header, and subheader controls as Quick Document, plus PDF, DOCX, PPTX, TXT, and XLSX download-type selection.
 - **FR-040:** Advanced Brief must extract knowledge from PDF, DOCX, PPTX, XLSX, text, and supported image uploads, send it with the brief to the configured provider, validate a structured document response, reject placeholder content, and unlock download only after successful validation.
 - **FR-041:** Presentation export must convert generated sections into substantive slides and requested visuals into source-supported editable charts, diagrams, comparisons, or supplied source images, with layout safeguards against clipped titles and overflowing content.
+- **FR-042:** Advanced Brief must offer exactly two grounding modes: Approved sources only, using uploaded documents, pasted notes and explicitly fetched public website URLs; and Approved sources + external websites, which may additionally use the selected provider's web-search tool. Website retrieval must reject non-public targets, extracted web content must be treated as untrusted data, and external URLs used must appear in the source trace.
 
 ## Edge Cases
 
