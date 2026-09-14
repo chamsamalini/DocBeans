@@ -13,10 +13,12 @@ import { BrandLogo } from '@/components/brand-logo';
 export default function AiSettingsPage() {
   const [settings, setSettings] = useState<AiSettings>(defaultAiSettings);
   const [saved, setSaved] = useState(false);
+  const [returnTo,setReturnTo]=useState('/create');
+  const [returnAfterSave,setReturnAfterSave]=useState(false);
 
   useEffect(() => {
     let active = true;
-    queueMicrotask(() => { if (active) setSettings(loadAiSettings()); });
+    queueMicrotask(() => { if (active) { setSettings(loadAiSettings()); const requested=new URLSearchParams(window.location.search).get('returnTo'); if(requested?.startsWith('/create')){setReturnTo(requested);setReturnAfterSave(true);} } });
     return () => { active = false; };
   }, []);
 
@@ -34,6 +36,7 @@ export default function AiSettingsPage() {
 
   const save = () => {
     saveAiSettings(settings);
+    if(returnAfterSave){window.location.assign(returnTo);return;}
     setSaved(true);
     window.setTimeout(()=>setSaved(false), 2200);
   };
@@ -44,7 +47,7 @@ export default function AiSettingsPage() {
   return <main className="min-h-screen bg-background text-foreground">
     <header className="sticky top-0 z-30 flex h-16 items-center border-b border-border bg-background/95 px-4 backdrop-blur sm:px-6 xl:px-7">
       <Link href="/" className="flex items-center gap-2.5" aria-label="DocBeans home"><BrandLogo /><Badge className="ml-1 bg-accent text-[10px] text-accent-foreground">BETA</Badge></Link>
-      <div className="ml-auto"><Link href="/create" className={buttonVariants({variant:'outline',className:'h-9 bg-card'})}>Back to documents</Link></div>
+      <div className="ml-auto"><Link href={returnTo} className={buttonVariants({variant:'outline',className:'h-9 bg-card'})}>Back to document</Link></div>
     </header>
 
     <div className="grid min-h-[calc(100vh-64px)] grid-cols-1 lg:grid-cols-[245px_minmax(0,1fr)]">
@@ -66,7 +69,7 @@ export default function AiSettingsPage() {
 
               {settings.credentialMode === 'byok' && <div className="rounded-xl border border-border bg-[#fafafa] p-4 sm:p-5"><label htmlFor="settings-api-key" className="field-label">{settings.provider === 'anthropic' ? 'Anthropic' : 'OpenAI'} API key <span>*</span></label><input id="settings-api-key" type="password" autoComplete="off" className="field-control mt-2 font-mono" value={settings.apiKey} onChange={e=>{setSettings(current=>({...current,apiKey:e.target.value}));setSaved(false);}} placeholder={settings.provider === 'anthropic' ? 'sk-ant-…' : 'sk-…'} /><p className="field-help"><LockKeyhole className="mr-1 inline size-3" />Kept only in this browser tab. It is cleared when the tab closes and is never included in DocBeans logs.</p></div>}
 
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5"><p className="text-sm text-muted-foreground">Current choice: <span className="font-semibold text-foreground">{settings.provider === 'anthropic' ? 'Anthropic' : 'OpenAI'} · {selectedModel?.label}</span></p><Button onClick={save} disabled={needsKey}>{saved ? <><Check /> Saved</> : 'Save AI settings'}</Button></div>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5"><p className="text-sm text-muted-foreground">Current choice: <span className="font-semibold text-foreground">{settings.provider === 'anthropic' ? 'Anthropic' : 'OpenAI'} · {selectedModel?.label}</span></p><Button onClick={save} disabled={needsKey}>{saved ? <><Check /> Saved</> : returnAfterSave?'Save and return to document':'Save AI settings'}</Button></div>
             </div>
           </section>
 
