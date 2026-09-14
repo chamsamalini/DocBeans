@@ -43,7 +43,7 @@
 - [x] T045 Generate substantive PowerPoint slides with editable source-supported visuals and gate all advanced downloads behind successful validation
 - [x] T046 Keep Advanced Brief provider schemas compatible with Anthropic while enforcing section-count limits in DocBeans validation
 - [x] T047 Replace decorative grounding choices with approved-only and approved-plus-external-web modes, safe website retrieval, provider web search, and visible URL tracing
-- [x] T048 Raise Advanced Brief to 50 MB per file and 100 sources using temporary local chunk storage, relevance retrieval, bounded provider context and image optimisation
+- [x] T048 Raise Advanced Brief to 100 sources under a shared 500 MB upload allowance with no separate per-file cap, using temporary local chunk storage, relevance retrieval, bounded provider context and image optimisation
 
 ## Planned commercial and desktop work
 

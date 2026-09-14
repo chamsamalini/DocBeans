@@ -45,7 +45,6 @@ async function extractPptx(buffer:ArrayBuffer) {
 }
 
 export async function extractKnowledgeFile(file:File):Promise<ExtractedKnowledge> {
-  if (file.size > 50 * 1024 * 1024) throw new Error('Use a file smaller than 50 MB.');
   const extension = file.name.split('.').pop()?.toLowerCase() || '';
   const mimeType = file.type || 'application/octet-stream';
   if (mimeType.startsWith('image/') || ['png','jpg','jpeg','webp','gif'].includes(extension)) {

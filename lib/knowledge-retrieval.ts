@@ -1,7 +1,7 @@
 'use client';
 
 export const MAX_KNOWLEDGE_FILES=100;
-export const MAX_KNOWLEDGE_FILE_BYTES=50*1024*1024;
+export const MAX_TOTAL_UPLOAD_BYTES=500*1024*1024;
 const DB_NAME='docbeans-knowledge-cache';
 const STORE_NAME='source-chunks';
 const CHUNK_CHARACTERS=2_500;
