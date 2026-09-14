@@ -46,6 +46,7 @@
 - [x] T048 Raise Advanced Brief to 100 sources under a shared 500 MB upload allowance with no separate per-file cap, using temporary local chunk storage, relevance retrieval, bounded provider context and image optimisation
 - [x] T049 Add resilient Advanced Brief structured-output parsing, completion diagnostics, one controlled malformed-response retry, aggregate attempt usage, and saved-brief recovery messaging
 - [x] T050 Add saved user-adjustable Advanced output budgets, document-type defaults, pre-generation provider-cost ceilings, failed-attempt usage disclosure, and no-retry handling for explicit provider token caps
+- [x] T051 Let customers change the saved output-token limit directly in final review and recalculate the provider-cost estimate immediately
 
 ## Planned commercial and desktop work
 
