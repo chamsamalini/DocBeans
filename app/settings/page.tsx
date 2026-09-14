@@ -30,7 +30,6 @@ export default function AiSettingsPage() {
 
   const selectCredentialMode = (credentialMode:CredentialMode) => {
     setSettings(current=>({ ...current, credentialMode, apiKey:credentialMode === 'managed' ? '' : current.apiKey }));
-    if (credentialMode === 'managed') clearSessionApiKey();
     setSaved(false);
   };
 

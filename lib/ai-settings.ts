@@ -46,7 +46,6 @@ export function saveAiSettings(settings:AiSettings) {
   if (typeof window === 'undefined') return;
   window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify({ provider:settings.provider, model:settings.model, credentialMode:settings.credentialMode }));
   if (settings.credentialMode === 'byok' && settings.apiKey.trim()) window.sessionStorage.setItem(API_KEY, settings.apiKey.trim());
-  else window.sessionStorage.removeItem(API_KEY);
 }
 
 export function clearSessionApiKey() {
