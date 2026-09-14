@@ -51,6 +51,7 @@
 - [x] T053 Preserve mandatory requirement metadata through provider submission, require substantive Q & A delivery, and reject coverage-only claims
 - [x] T054 Require knowledge-derived training visuals, distinguish editable process and comparison rendering, and prevent source-image reuse from satisfying visual validation
 - [x] T055 Replace deprecated GPT-5.3 with the current OpenAI and Anthropic document-capable catalogues, exact API identifiers, provider-aligned cost estimates, and saved-selection migration
+- [x] T056 Convert repairable Advanced quality failures into one automatic, validation-guided regeneration with preserved content, aggregate usage and success-only DocBeans charging
 
 ## Planned commercial and desktop work
 
