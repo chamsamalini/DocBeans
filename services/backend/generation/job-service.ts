@@ -9,17 +9,20 @@ const PROVIDERS = {
   anthropic: {
     defaultModel: 'claude-sonnet-5',
     models: {
+      'claude-fable-5-1': { input: 10, output: 50 },
+      'claude-opus-5': { input: 5, output: 25 },
       'claude-sonnet-5': { input: 2, output: 10 },
       'claude-haiku-4-5': { input: 1, output: 5 },
       'claude-haiku-4-5-20251001': { input: 1, output: 5 },
     },
   },
   openai: {
-    defaultModel: 'gpt-5-mini',
+    defaultModel: 'gpt-5.6-terra',
     models: {
-      'gpt-5-mini': { input: 0.25, output: 2 },
-      'gpt-5.3-chat-latest': { input: 1.75, output: 14 },
-      'gpt-4.1-mini': { input: 0.4, output: 1.6 },
+      'gpt-6-astra': { input: 10, output: 50 },
+      'gpt-5.6-sol': { input: 4, output: 20 },
+      'gpt-5.6-terra': { input: 2, output: 12 },
+      'gpt-5.6-luna': { input: 0.2, output: 1.2 },
     },
   },
 } as const;
@@ -314,6 +317,7 @@ export async function generateJobDocument(request:Request) {
     body: JSON.stringify({
       model,
       max_output_tokens:4000,
+      reasoning:{ effort:'low' },
       input:[{ role:'system', content:systemPrompt }, { role:'user', content:JSON.stringify(input) }],
       text:{ format:{ type:'json_schema', name:'job_document', strict:true, schema:responseSchema } },
     }),
