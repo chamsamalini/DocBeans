@@ -47,6 +47,7 @@
 - [x] T049 Add resilient Advanced Brief structured-output parsing, completion diagnostics, one controlled malformed-response retry, aggregate attempt usage, and saved-brief recovery messaging
 - [x] T050 Add saved user-adjustable Advanced output budgets, document-type defaults, pre-generation provider-cost ceilings, failed-attempt usage disclosure, and no-retry handling for explicit provider token caps
 - [x] T051 Let customers change the saved output-token limit directly in final review and recalculate the provider-cost estimate immediately
+- [x] T052 Refine the Advanced LLM prompt with document-specific editorial standards, genuine training-design requirements, presentation readability limits, source-taxonomy caution, meaningful visual rules and corresponding quality rejection checks
 
 ## Planned commercial and desktop work
 
