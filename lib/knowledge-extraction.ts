@@ -1,5 +1,7 @@
 'use client';
 
+import pdfWorkerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
+
 export type ExtractedKnowledge = {
   content:string;
   mimeType:string;
@@ -20,7 +22,7 @@ async function imageDataUrl(file:File) {
 
 async function extractPdf(buffer:ArrayBuffer) {
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/legacy/build/pdf.worker.min.mjs', import.meta.url).toString();
+  pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
   const document = await pdfjs.getDocument({ data:new Uint8Array(buffer) }).promise;
   const pages:string[] = [];
   for (let index=1; index<=Math.min(document.numPages,300); index+=1) {
