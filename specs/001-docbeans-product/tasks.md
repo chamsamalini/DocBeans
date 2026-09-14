@@ -41,6 +41,7 @@
 - [x] T043 Extract supported file and image knowledge in Advanced Brief instead of retaining filenames only
 - [x] T044 Add provider-backed structured Advanced Brief generation with source grounding, requirement coverage, usage accounting, and placeholder rejection
 - [x] T045 Generate substantive PowerPoint slides with editable source-supported visuals and gate all advanced downloads behind successful validation
+- [x] T046 Keep Advanced Brief provider schemas compatible with Anthropic while enforcing section-count limits in DocBeans validation
 
 ## Planned commercial and desktop work
 
