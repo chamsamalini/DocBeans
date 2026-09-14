@@ -92,6 +92,7 @@ specs/001-docbeans-product/
 13. Deploy one Worker for operational simplicity and same-origin sessions, but keep frontend, backend, and authentication as explicit code ownership boundaries.
 14. Allow provider SDK imports only inside `services/auth/adapters/<provider>`; all consumers use the stable auth contracts and facades.
 15. Keep `app/api` as thin transport wiring and place generation business logic in `services/backend/generation`.
+16. Treat provider output as an unreliable boundary: assemble all returned text blocks, parse a complete JSON object from permitted wrappers, log only structural diagnostics and completion reasons, and retry malformed structured output no more than once while aggregating usage across attempts.
 16. Reserve `DOCBEANS_AUTH_PROVIDER` as the adapter selector; Supabase is active and Auth0 is an extension point rather than a cross-application rewrite.
 
 ## Delivery
