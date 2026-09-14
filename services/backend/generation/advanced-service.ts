@@ -31,7 +31,7 @@ function usage(provider:Provider,model:string,raw:Record<string,unknown>,rates:{
 
 function parseSources(value:unknown):KnowledgeSource[]{
   if(!Array.isArray(value))return [];
-  return value.slice(0,10).flatMap(item=>{if(!item||typeof item!=='object')return[];const source=item as Record<string,unknown>;const name=clean(source.name,200),kind=source.kind==='image'?'image':source.kind==='website'?'website':'text',mimeType=clean(source.mimeType,100)||'text/plain',content=clean(source.content);const dataUrl=clean(source.dataUrl,11_000_000),url=clean(source.url,2_000);if(!name||(!content&&!dataUrl))return[];return[{name,mimeType,kind,content,dataUrl:dataUrl||undefined,url:url||undefined} as KnowledgeSource];});
+  return value.slice(0,100).flatMap(item=>{if(!item||typeof item!=='object')return[];const source=item as Record<string,unknown>;const name=clean(source.name,200),kind=source.kind==='image'?'image':source.kind==='website'?'website':'text',mimeType=clean(source.mimeType,100)||'text/plain',content=clean(source.content);const dataUrl=clean(source.dataUrl,11_000_000),url=clean(source.url,2_000);if(!name||(!content&&!dataUrl))return[];return[{name,mimeType,kind,content,dataUrl:dataUrl||undefined,url:url||undefined} as KnowledgeSource];});
 }
 
 function validate(document:AdvancedDocument,documentType:string,sources:KnowledgeSource[],requirements:string[],visuals:boolean,groundingMode:GroundingMode,providerUrls:string[]){

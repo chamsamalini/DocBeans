@@ -7,19 +7,15 @@ export type ExtractedKnowledge = {
   kind:'text'|'image';
 };
 
-const TEXT_LIMIT = 60_000;
+const TEXT_LIMIT = 2_000_000;
 
 function compact(value:string) {
   return value.replace(/\u0000/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n{4,}/g,'\n\n\n').trim().slice(0,TEXT_LIMIT);
 }
 
-async function dataUrl(file:File) {
-  return await new Promise<string>((resolve,reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(reader.error || new Error('The file could not be read.'));
-    reader.readAsDataURL(file);
-  });
+async function imageDataUrl(file:File) {
+  const source=URL.createObjectURL(file);
+  try{return await new Promise<{dataUrl:string;mimeType:string}>((resolve,reject)=>{const image=new Image();image.onload=()=>{const scale=Math.min(1,1800/Math.max(image.naturalWidth,image.naturalHeight));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));const context=canvas.getContext('2d');if(!context){reject(new Error('The image could not be prepared.'));return;}context.drawImage(image,0,0,canvas.width,canvas.height);canvas.toBlob(blob=>{if(!blob){reject(new Error('The image could not be prepared.'));return;}const reader=new FileReader();reader.onload=()=>resolve({dataUrl:String(reader.result),mimeType:'image/webp'});reader.onerror=()=>reject(reader.error||new Error('The image could not be read.'));reader.readAsDataURL(blob);},'image/webp',.84);};image.onerror=()=>reject(new Error('The image could not be decoded.'));image.src=source;});}finally{URL.revokeObjectURL(source);}
 }
 
 async function extractPdf(buffer:ArrayBuffer) {
@@ -27,7 +23,7 @@ async function extractPdf(buffer:ArrayBuffer) {
   pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/legacy/build/pdf.worker.min.mjs', import.meta.url).toString();
   const document = await pdfjs.getDocument({ data:new Uint8Array(buffer) }).promise;
   const pages:string[] = [];
-  for (let index=1; index<=Math.min(document.numPages,80); index+=1) {
+  for (let index=1; index<=Math.min(document.numPages,300); index+=1) {
     const page = await document.getPage(index);
     const text = await page.getTextContent();
     pages.push(text.items.map(item => 'str' in item ? item.str : '').join(' '));
@@ -49,11 +45,11 @@ async function extractPptx(buffer:ArrayBuffer) {
 }
 
 export async function extractKnowledgeFile(file:File):Promise<ExtractedKnowledge> {
-  if (file.size > 8 * 1024 * 1024) throw new Error('Use a file smaller than 8 MB.');
+  if (file.size > 50 * 1024 * 1024) throw new Error('Use a file smaller than 50 MB.');
   const extension = file.name.split('.').pop()?.toLowerCase() || '';
   const mimeType = file.type || 'application/octet-stream';
   if (mimeType.startsWith('image/') || ['png','jpg','jpeg','webp','gif'].includes(extension)) {
-    return { content:`Image source: ${file.name}`, mimeType:mimeType.startsWith('image/')?mimeType:'image/jpeg', dataUrl:await dataUrl(file), kind:'image' };
+    const prepared=await imageDataUrl(file);return { content:`Image source: ${file.name}`, mimeType:prepared.mimeType, dataUrl:prepared.dataUrl, kind:'image' };
   }
   if (['txt','md','csv','json'].includes(extension) || mimeType.startsWith('text/')) return { content:compact(await file.text()), mimeType, kind:'text' };
   const buffer = await file.arrayBuffer();
