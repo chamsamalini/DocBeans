@@ -1,12 +1,14 @@
 import Link from 'next/link';
-import { CheckCircle2, FileText, KeyRound, PenLine, SearchCheck, Settings, UploadCloud } from 'lucide-react';
+import { CheckCircle2, FileText, KeyRound, LayoutTemplate, PenLine, SearchCheck, Settings, UploadCloud } from 'lucide-react';
 import { MarketingPage } from '@/components/marketing-page';
 
 const steps=[
   [Settings,'Set the AI provider','Open AI settings, choose Anthropic or OpenAI, select a model, and decide whether to use the managed key or BYOK.'],
   [FileText,'Choose a document','Open Quick document for an everyday draft. In Advanced brief, select the exact output—such as a presentation, report or proposal—before adding your content goal.'],
-  [PenLine,'Provide the essential facts','Complete the required fields. Add names, dates, outcomes, scope and constraints that the document must preserve.'],
+  [PenLine,'Provide facts and requirements','Complete the required fields, review the recommended requirements for the selected Quick Document and add any custom requirement. Include names, dates, outcomes, scope and constraints that the document must preserve.'],
   [UploadCloud,'Add approved knowledge','In Advanced brief, add up to 100 sources with a 500 MB combined upload allowance and no separate per-file cap: PDF, DOCX, PPTX, XLSX, text, images, pasted notes or fetched public website pages. Large text sources are chunked in a temporary local cache.'],
+  [LayoutTemplate,'Apply an optional template','On the Output step, upload one PPTX or DOCX example and choose Content format, Design only, or Content + design. The template controls structure and supported style cues; it remains separate from factual knowledge and is never cited as evidence.'],
+  [FileText,'Brand a quotation','For a Quick Document business quotation, optionally upload a Word (.docx) company template. DocBeans applies detected typography and colours while keeping template wording separate from quotation facts.'],
   [SearchCheck,'Choose grounding and review','Use Approved sources only for strict evidence control, or Approved sources + external websites to permit provider web research. DocBeans selects relevant source excerpts for the brief; review the draft, requirement coverage and source trace before downloading.'],
   [CheckCircle2,'Review and download','After generation, open the Document tab to review the developed content. In Output settings, select Download PDF, DOCX, PPTX, TXT or XLSX. Quick documents can also be copied for their destination.'],
 ] as const;

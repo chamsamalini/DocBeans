@@ -1,6 +1,7 @@
 import { env } from 'cloudflare:workers';
 import { getAuthenticatedUser } from '@/services/auth/server';
 import type { GenerationUsage, QuickGenerationResponse } from '@/lib/job-generation';
+import { normaliseQuotationDocument } from './quotation';
 
 type Provider = 'anthropic' | 'openai';
 const DOCBEANS_PRICE_SGD = 0.03;
@@ -9,9 +10,17 @@ const PROVIDERS = {
   openai:{ defaultModel:'gpt-5.6-terra', models:{ 'gpt-6-astra':{input:10,output:50}, 'gpt-5.6-sol':{input:4,output:20}, 'gpt-5.6-terra':{input:2,output:12}, 'gpt-5.6-luna':{input:.2,output:1.2} } },
 } as const;
 const documentTypes = new Set(['appreciation','recommendation','testimonial','thank-you','cover-letter','quotation','proposal','project-brief','executive-summary','curriculum','memo','announcement','meeting-agenda','meeting-minutes','sop','leave','medical-leave']);
-const schema = { type:'object', additionalProperties:false, required:['title','body'], properties:{ title:{type:'string'}, body:{type:'string'} } } as const;
+const generalSchema = { type:'object', additionalProperties:false, required:['title','body'], properties:{ title:{type:'string'}, body:{type:'string'} } } as const;
+const quotationSchema = {type:'object',additionalProperties:false,required:['title','body','quotation'],properties:{
+  title:{type:'string'},body:{type:'string'},quotation:{type:'object',additionalProperties:false,required:['quotationNumber','issueDate','validity','preparedFor','preparedBy','clientContact','supplierContact','currency','items','subtotal','taxLabel','taxAmount','total','paymentTerms','paymentDetails','deliveryTerms','exclusions','acceptanceInstructions'],properties:{
+    quotationNumber:{type:'string'},issueDate:{type:'string'},validity:{type:'string'},preparedFor:{type:'string'},preparedBy:{type:'string'},clientContact:{type:'string'},supplierContact:{type:'string'},currency:{type:'string'},
+    items:{type:'array',items:{type:'object',additionalProperties:false,required:['description','quantity','unitPrice','amount'],properties:{description:{type:'string'},quantity:{type:'string'},unitPrice:{type:'string'},amount:{type:'string'}}}},
+    subtotal:{type:'string'},taxLabel:{type:'string'},taxAmount:{type:'string'},total:{type:'string'},paymentTerms:{type:'string'},paymentDetails:{type:'string'},deliveryTerms:{type:'string'},exclusions:{type:'string'},acceptanceInstructions:{type:'string'},
+  }},
+}} as const;
 
 function clean(value:unknown, limit=5000) { return typeof value === 'string' ? value.trim().slice(0,limit) : ''; }
+function requirements(value:unknown){return Array.isArray(value)?[...new Set(value.map(item=>clean(item,300)).filter(Boolean))].slice(0,12):[];}
 function select(payload:Record<string,unknown>) {
   const provider:Provider = payload.provider === 'openai' ? 'openai' : 'anthropic';
   const config = PROVIDERS[provider];
@@ -43,7 +52,8 @@ function outputText(raw:Record<string,unknown>, provider:Provider) {
 }
 function fallback(payload:Record<string,unknown>) {
   const primary=clean(payload.primary,500), details=clean(payload.details), secondary=clean(payload.secondary,1000), sender=clean(payload.sender,300);
-  return { title:primary || 'Untitled document', body:[details,secondary,sender && `From: ${sender}`].filter(Boolean).join('\n\n') };
+  const selectedRequirements=requirements(payload.requirements);
+  return { title:primary || 'Untitled document', body:[details,secondary,selectedRequirements.length&&`Requirements to address:\n${selectedRequirements.map(item=>`• ${item}`).join('\n')}`,sender && `From: ${sender}`].filter(Boolean).join('\n\n') };
 }
 function usage(mode:GenerationUsage['mode'], model:string, raw:Record<string,unknown>, rates:{input:number;output:number}, isByok=false):GenerationUsage {
   const value=(raw.usage||{}) as {input_tokens?:number;output_tokens?:number;cache_read_input_tokens?:number;input_tokens_details?:{cached_tokens?:number}};
@@ -59,13 +69,19 @@ export async function generateQuickDocument(request:Request) {
   const {provider,model,rates}=select(payload);
   const isByok=request.headers.get('X-DocBeans-Billing-Mode')==='byok' && Boolean(request.headers.get('X-Provider-API-Key')?.trim());
   const key=keyFor(provider,request);
+  const isQuotation=clean(payload.documentType,80)==='quotation';
+  const issueDate=new Date().toISOString().slice(0,10);
+  const quotationReference=`DBQ-${issueDate.replaceAll('-','')}-${requestId.slice(0,6).toUpperCase()}`;
   if (!key) {
-    const result:QuickGenerationResponse={document:fallback(payload),usage:usage('local-fallback','Local document rules',{},rates),notice:`${provider==='anthropic'?'Anthropic':'OpenAI'} is not configured. Add a BYOK key in AI settings or configure a managed key.`};
+    const fallbackDocument=fallback(payload);
+    const document=isQuotation?normaliseQuotationDocument(fallbackDocument,{client:clean(payload.primary,500),details:clean(payload.details),terms:clean(payload.secondary,1000),preparedBy:clean(payload.sender,300),requirements:requirements(payload.requirements),clientContact:clean(payload.clientContact,1000),supplierContact:clean(payload.supplierContact,1000),paymentTerms:clean(payload.paymentTerms,1000),paymentDetails:clean(payload.paymentDetails,1500),deliveryTerms:clean(payload.deliveryTerms,1000),exclusions:clean(payload.exclusions,1000),acceptanceInstructions:clean(payload.acceptanceInstructions,1000)},quotationReference,issueDate):fallbackDocument;
+    const result:QuickGenerationResponse={document,usage:usage('local-fallback','Local document rules',{},rates),notice:`${provider==='anthropic'?'Anthropic':'OpenAI'} is not configured. Add a BYOK key in AI settings or configure a managed key.`};
     return Response.json(result,{headers:{'X-Request-ID':requestId}});
   }
-  const brief={documentType:clean(payload.documentType,80),recipientOrSubject:clean(payload.primary,500),details:clean(payload.details),additionalContext:clean(payload.secondary,1000),preparedBy:clean(payload.sender,300),tone:clean(payload.tone,120)};
-  const system='You are DocBeans, a careful professional document writer. Create the requested document in polished, natural language. Preserve supplied names, dates, amounts and facts. Do not invent claims, diagnoses, prices, credentials, policies or commitments. Match the requested document type and tone. Return a concise title and complete plain-text body. Use short headings and bullet characters only where they improve the document. Do not repeat the title in the body.';
-  const response=provider==='anthropic' ? await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':key,'anthropic-version':'2023-06-01','Content-Type':'application/json'},body:JSON.stringify({model,max_tokens:3000,system,messages:[{role:'user',content:JSON.stringify(brief)}],output_config:{format:{type:'json_schema',schema}}})}) : await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:JSON.stringify({model,max_output_tokens:3000,reasoning:{effort:'low'},input:[{role:'system',content:system},{role:'user',content:JSON.stringify(brief)}],text:{format:{type:'json_schema',name:'document',strict:true,schema}}})});
+  const brief={documentType:clean(payload.documentType,80),recipientOrSubject:clean(payload.primary,500),details:clean(payload.details),additionalContext:clean(payload.secondary,1000),preparedBy:clean(payload.sender,300),tone:clean(payload.tone,120),requirements:requirements(payload.requirements),clientContact:clean(payload.clientContact,1000),supplierContact:clean(payload.supplierContact,1000),paymentTerms:clean(payload.paymentTerms,1000),paymentDetails:clean(payload.paymentDetails,1500),deliveryTerms:clean(payload.deliveryTerms,1000),exclusions:clean(payload.exclusions,1000),acceptanceInstructions:clean(payload.acceptanceInstructions,1000)};
+  const system=isQuotation?'You are DocBeans, a precise commercial-document editor. Convert the supplied quotation brief into a client-ready quotation structure. Treat every supplied requirement as an acceptance criterion and address it in the quotation where the available facts permit. Preserve every supplied amount, currency, duration, tax statement and commercial term exactly in meaning. Never invent prices, tax rates, addresses, contact details, bank details, delivery commitments or legal terms. Use an empty string when a commercial fact was not supplied. Put each priced service or product in items with description, quantity, unit price and amount. Separate subtotal, tax and total; if tax is merely described as applicable, do not calculate it. Keep payment terms (when and how much is due) separate from payment details (payment method, remittance instructions or supplied bank details). Keep body to a short professional introduction and do not repeat the pricing table. Return only the structured document.' : 'You are DocBeans, a careful professional document writer. Create the requested document in polished, natural language. Treat every supplied requirement as an acceptance criterion and address it visibly where the available facts permit. Preserve supplied names, dates, amounts and facts. Do not invent claims, diagnoses, prices, credentials, policies or commitments. Match the requested document type and tone. Return a concise title and complete plain-text body. Use short headings and bullet characters only where they improve the document. Do not repeat the title in the body.';
+  const schema=isQuotation?quotationSchema:generalSchema;
+  const response=provider==='anthropic' ? await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':key,'anthropic-version':'2023-06-01','Content-Type':'application/json'},body:JSON.stringify({model,max_tokens:3000,system,messages:[{role:'user',content:JSON.stringify({...brief,...(isQuotation?{quotationReference,issueDate}: {})})}],output_config:{format:{type:'json_schema',schema}}})}) : await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:JSON.stringify({model,max_output_tokens:3000,reasoning:{effort:'low'},input:[{role:'system',content:system},{role:'user',content:JSON.stringify({...brief,...(isQuotation?{quotationReference,issueDate}: {})})}],text:{format:{type:'json_schema',name:isQuotation?'quotation_document':'document',strict:true,schema}}})});
   const raw=await response.json() as Record<string,unknown>;
   if (!response.ok) {
     const message=raw.error&&typeof raw.error==='object'&&typeof (raw.error as {message?:unknown}).message==='string'?(raw.error as {message:string}).message:'The generation provider could not complete this request.';
@@ -74,7 +90,8 @@ export async function generateQuickDocument(request:Request) {
   }
   const text=outputText(raw,provider);
   try {
-    const document=JSON.parse(text) as {title:string;body:string};
+    const parsed=JSON.parse(text) as QuickGenerationResponse['document'];
+    const document=isQuotation?normaliseQuotationDocument(parsed,{client:brief.recipientOrSubject,details:brief.details,terms:brief.additionalContext,preparedBy:brief.preparedBy,requirements:brief.requirements,clientContact:brief.clientContact,supplierContact:brief.supplierContact,paymentTerms:brief.paymentTerms,paymentDetails:brief.paymentDetails,deliveryTerms:brief.deliveryTerms,exclusions:brief.exclusions,acceptanceInstructions:brief.acceptanceInstructions},quotationReference,issueDate):parsed;
     const result:QuickGenerationResponse={document,usage:usage(provider,typeof raw.model==='string'?raw.model:model,raw,rates,isByok),notice:isByok?'BYOK generation: your AI provider bills this model usage directly. No DocBeans AI credit was consumed.':undefined};
     return Response.json(result,{headers:{'X-Request-ID':requestId}});
   } catch {

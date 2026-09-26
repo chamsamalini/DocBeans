@@ -52,6 +52,37 @@
 - [x] T054 Require knowledge-derived training visuals, distinguish editable process and comparison rendering, and prevent source-image reuse from satisfying visual validation
 - [x] T055 Replace deprecated GPT-5.3 with the current OpenAI and Anthropic document-capable catalogues, exact API identifiers, provider-aligned cost estimates, and saved-selection migration
 - [x] T056 Convert repairable Advanced quality failures into one automatic, validation-guided regeneration with preserved content, aggregate usage and success-only DocBeans charging
+- [x] T057 Add section-level source traces and factual-coverage validation for Advanced documents
+- [x] T058 Require complete instructional sequencing, measurable activities, separated assessment answers and readable Q & A layouts
+- [x] T059 Enforce visual frequency, label fit and multi-form diversity for generated presentations
+- [x] T060 Repair and verify PPTX package integrity before download, store citations in speaker notes and remove repeated source footers
+- [x] T061 Produce a repaired training deck and a reusable slide-by-slide rewrite specification
+- [x] T062 Add optional PPTX/DOCX template profiling, structure/design/both controls, saved-draft persistence, prompt isolation and template-aware export styling
+- [x] T063 Add per-slide instructional purpose, realistic timing and substantive facilitator notes to the structured generation contract
+- [x] T064 Add adult-learning topic blueprints, generic-content rejection and selective topic-quality repair
+- [x] T065 Bound per-topic provider context with relevance-ranked source excerpts while preserving citations
+- [x] T066 Add editable timeline, matrix, cycle, architecture and risk-map visual plans and render visuals in topic PowerPoint files
+- [x] T067 Consolidate course-level outcome slides and retain detailed outcomes inside topic decks
+- [x] T068 Preserve all saved topic decks and make assembly-only retries consume no provider tokens
+- [x] T069 Replace brittle assembled-course phrase matching with structured instructional-sequence validation and a legacy fallback
+- [x] T070 Keep delivery timing in facilitator metadata and agenda slides instead of visible presentation headings
+- [x] T071 Strengthen training generation and validation for executive hierarchy, evidence-led layouts and visual density
+- [x] T072 Replace free-form quotation generation with a structured, non-inventing commercial-document contract
+- [x] T073 Add professional quotation preview and structured PDF, DOCX and XLSX exports
+- [x] T074 Add explicit payment-terms and remittance-details intake and preserve both across quotation generation and exports
+- [x] T075 Add optional safe Word company-template profiling and branded quotation rendering
+- [x] T076 Add selectable recommended and custom requirements across the full Quick Document catalogue
+- [x] T077 Repair local quotation parsing, commercial completeness and client-facing copy
+- [x] T078 Apply generated quotations to the actual uploaded Word package for DOCX export
+- [x] T079 Remove over-strict quotation gating and explain missing optional commercial details
+- [x] T080 Render uploaded Word letterhead branding in quotation preview and retain body-level logo artwork
+- [x] T081 Remove the generic quotation-export fallback, add commercial completeness and package-preservation gates, and verify a real generated DOCX with header, footer, media, pricing, totals, terms and acceptance tables
+- [x] T082 Expand the document font catalogue and apply the selected family consistently across preview, DOCX, PowerPoint and PDF-compatible export paths
+- [x] T083 Add a presentation-only exact slide-count brief control, use it for narrative generation, density repair, validation and token recommendations, and replace generic requirement suggestions with presentation-specific criteria
+- [x] T084 Treat pasted notes as a traceable approved source, restore missing section references deterministically from approved evidence, and make validation recovery advice failure-specific
+- [x] T085 Add deterministic presentation-density repair that preserves overflow in speaker notes and runs before any paid full-model regeneration
+- [x] T086 Enforce focused one-topic slides, eight-word headings, meaningful editable visual plans, visible visual explanations and decision-ready objection-resistant proposal coverage while preserving the explicit slide-count contract
+- [x] T087 Add adaptive seven-part proposal intake, persisted readiness review, pre-provider completeness gating and semantic proposal coverage validation
 
 ## Planned commercial and desktop work
 

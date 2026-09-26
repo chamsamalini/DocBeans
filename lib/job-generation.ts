@@ -9,6 +9,7 @@ export type JobPostInput = {
   benefits: string;
   application: string;
   tone: string;
+  requirements: string[];
 };
 
 export type QualityCheck = {
@@ -58,15 +59,47 @@ export type JobGenerationResponse = {
   notice?: string;
 };
 
-export type GeneratedQuickDocument = { title:string; body:string };
+export type GeneratedQuotationItem = {
+  description:string;
+  quantity:string;
+  unitPrice:string;
+  amount:string;
+};
+
+export type GeneratedQuotation = {
+  quotationNumber:string;
+  issueDate:string;
+  validity:string;
+  preparedFor:string;
+  preparedBy:string;
+  clientContact:string;
+  supplierContact:string;
+  currency:string;
+  items:GeneratedQuotationItem[];
+  subtotal:string;
+  taxLabel:string;
+  taxAmount:string;
+  total:string;
+  paymentTerms:string;
+  paymentDetails:string;
+  deliveryTerms:string;
+  exclusions:string;
+  acceptanceInstructions:string;
+};
+
+export type GeneratedQuickDocument = {
+  title:string;
+  body:string;
+  quotation?:GeneratedQuotation;
+};
 export type QuickGenerationResponse = {
   document:GeneratedQuickDocument;
-  usage:GenerationUsage;
+  usage?:GenerationUsage;
   notice?:string;
 };
 
 export type AdvancedVisual = {
-  type:'none'|'chart'|'process'|'comparison'|'source-image';
+  type:'none'|'chart'|'process'|'comparison'|'timeline'|'matrix'|'cycle'|'architecture'|'risk-map'|'source-image';
   title:string;
   description:string;
   sourceName:string;
@@ -78,13 +111,21 @@ export type AdvancedSection = {
   title:string;
   summary:string;
   bullets:string[];
+  instructionalPurpose:'orient'|'explain'|'demonstrate'|'compare'|'practice'|'apply'|'decide'|'recap';
+  timingMinutes:number;
+  facilitatorNotes:string[];
   visual:AdvancedVisual;
+  /** Exact approved filename or URL references used for this section. */
+  sourceRefs:string[];
 };
+
+export type TrainingModule = { title:string; subtitle:string; sections:AdvancedSection[] };
 
 export type AdvancedDocument = {
   title:string;
   subtitle:string;
   sections:AdvancedSection[];
+  trainingModules?:TrainingModule[];
   sourcesUsed:string[];
   requirementCoverage:{ requirement:string; status:'addressed'|'review'; evidence:string }[];
   quality:{
@@ -95,8 +136,24 @@ export type AdvancedDocument = {
   };
 };
 
+export type CoursePlanTopic = {
+  title:string;
+  purpose:string;
+  durationMinutes:number;
+  outcomes:string[];
+};
+
+export type CoursePlan = {
+  title:string;
+  subtitle?:string;
+  topics:CoursePlanTopic[];
+};
+
 export type AdvancedGenerationResponse = {
-  document:AdvancedDocument;
+  document?:AdvancedDocument;
+  coursePlan?:CoursePlan;
+  topicDocument?:AdvancedDocument;
+  topicIndex?:number;
   usage:GenerationUsage;
   notice?:string;
 };

@@ -10,7 +10,7 @@ const MAX_CONTEXT_CHARACTERS=300_000;
 const CACHE_TTL_MS=24*60*60*1000;
 
 type ChunkRecord={id:number;chunks:string[];expiresAt:number};
-type RetrievalSource={id:number;name:string;kind:'text'|'image'|'website';content:string;url?:string};
+type RetrievalSource={id:number;name:string;kind:'text'|'image'|'website';content:string;mimeType?:string;dataUrl?:string;url?:string};
 
 function database(){
   return new Promise<IDBDatabase>((resolve,reject)=>{const request=indexedDB.open(DB_NAME,1);request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains(STORE_NAME))request.result.createObjectStore(STORE_NAME,{keyPath:'id'});};request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error||new Error('Local knowledge storage could not be opened.'));});

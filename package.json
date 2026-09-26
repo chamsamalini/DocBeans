@@ -6,9 +6,21 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": "vinext dev",
+    "dev": "node scripts/start-dev.mjs",
     "build": "vinext build",
     "start": "wrangler dev --config dist/server/wrangler.json",
+    "test:provider-schemas": "node scripts/check-provider-schemas.mjs",
+    "test:course-plan": "node --experimental-strip-types scripts/test-course-plan.mjs",
+    "test:training-workflow": "node --experimental-strip-types scripts/test-training-workflow.mjs",
+    "test:quotation-workflow": "node --experimental-strip-types scripts/test-quotation-workflow.mjs",
+    "test:quick-requirements": "node scripts/test-quick-requirements.mjs",
+    "test:word-quotation-template": "node --experimental-strip-types scripts/test-word-quotation-template.mjs",
+    "test:document-fonts": "node scripts/test-document-fonts.mjs",
+    "test:presentation-slide-count": "node --experimental-strip-types scripts/test-presentation-slide-count.mjs",
+    "test:source-trace-recovery": "node --experimental-strip-types scripts/test-source-trace-recovery.mjs",
+    "test:presentation-density": "node --experimental-strip-types scripts/test-presentation-density.mjs",
+    "test:presentation-standards": "node --experimental-strip-types scripts/test-presentation-standards.mjs",
+    "test:proposal-readiness": "node scripts/test-proposal-readiness.mjs",
     "lint": "oxlint",
     "format": "oxfmt"
   },

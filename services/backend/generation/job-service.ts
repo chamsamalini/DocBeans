@@ -88,6 +88,7 @@ function parseInput(value:unknown): JobPostInput | null {
     benefits: clean(source.benefits, 2000),
     application: clean(source.application, 1000),
     tone: clean(source.tone, 120),
+    requirements: Array.isArray(source.requirements) ? [...new Set(source.requirements.map(item=>clean(item,300)).filter(Boolean))].slice(0,12) : [],
   };
   return input.title && input.responsibilities && input.qualifications ? input : null;
 }
@@ -300,7 +301,7 @@ export async function generateJobDocument(request:Request) {
     return Response.json(result, { headers:{'X-Request-ID':requestId} });
   }
 
-  const systemPrompt = 'You are DocBeans, a meticulous senior talent-acquisition writer. Produce a credible, inclusive and publication-ready job description. Correct spelling, capitalisation and grammar. Rewrite fragments into natural professional language. Preserve all supplied facts. Never invent salary, benefits, credentials, years of experience, reporting lines, company claims or deadlines. Use empty arrays or explicit missing-information notes when facts are absent. Responsibilities must be distinct, action-led and outcome-oriented. Separate required from preferred qualifications. The LinkedIn introduction must be concise and candidate-friendly. Reproduce companyUrl exactly when supplied; do not browse it or infer facts from it. Quality status may be ready only when grammar, structure and all essential publication details pass.';
+  const systemPrompt = 'You are DocBeans, a meticulous senior talent-acquisition writer. Produce a credible, inclusive and publication-ready job description. Treat every supplied document requirement as an acceptance criterion and address it where the available facts permit. Correct spelling, capitalisation and grammar. Rewrite fragments into natural professional language. Preserve all supplied facts. Never invent salary, benefits, credentials, years of experience, reporting lines, company claims or deadlines. Use empty arrays or explicit missing-information notes when facts are absent. Responsibilities must be distinct, action-led and outcome-oriented. Separate required from preferred qualifications. The LinkedIn introduction must be concise and candidate-friendly. Reproduce companyUrl exactly when supplied; do not browse it or infer facts from it. Quality status may be ready only when grammar, structure and all essential publication details pass.';
   const providerResponse = provider === 'anthropic' ? await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' },
